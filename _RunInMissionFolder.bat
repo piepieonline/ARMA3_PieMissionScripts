@@ -1,0 +1,1 @@
+mklink /J globalScripts "D:\Game Modding\ARMA 3\_CustomScripts"
