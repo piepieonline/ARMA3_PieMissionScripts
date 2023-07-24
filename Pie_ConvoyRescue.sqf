@@ -1,6 +1,15 @@
 Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\Zen_OccupyHouse.sqf";
 
-_convoy = _this param [0, [], [[]], []];
+// TODO: Extract location not moving properly potentially
+
+// Param 0, var unit of convoy, not array of all
+_convoyGroup = _this param [0, objNull];
+// Param 1, var of base template (playerBaseSetup)
+_baseTemplate = _this param [1, objNull];
+// Param 2 (optional), classname of base markers
+_baseSpawnClassNames = _this param [2, "c_man_p_beggar_f"];
+
+_convoy = [_convoyGroup, true] call BIS_fnc_groupVehicles;
 
 _dmpCore = allMissionObjects "dmp_Core" select 0;
 _dmpDefend = allMissionObjects "dmp_Defend" select 0;
@@ -146,6 +155,26 @@ _dmpDefend setPos position _road;
 _dmpTalk setPos position _building;
 
 // Setup the mission content
+
+// Move the player spawn
+// Get the possible positions, select the closest to the objective
+_spawnPoints = nearestObjects [position _dmpDefend, [_baseSpawnClassNames], 20000, true];
+_selectedSpawnPoint = _spawnPoints select 0;
+
+// Move everything
+{
+	_offset = _baseTemplate worldToModel position _x;
+	_offsetRot = getDir _x; 
+	_newPos = _selectedSpawnPoint modelToWorld [(_offset select 0), (_offset select 1), 0];
+	_x setPosATL _newPos;
+	_x setDir ((getDir _selectedSpawnPoint) + _offsetRot);
+} forEach (synchronizedObjects _baseTemplate);
+
+// Delete markers objects
+{
+	deleteVehicle _x;
+} forEach _spawnPoints;
+
 // All units, seperated per vehicle
 _convoyUnits = [];
 // All units that are out of the vehicles
@@ -198,8 +227,14 @@ _convoyUnitsExceptGunners = [];
 	} forEach fullCrew _vic;
 } forEach _convoy;
 
-// TODO: Do something with the extra
-_missedUnits = [position _building, _convoyUnitsExceptGunners, -1, false, false, false, false] call Zen_OccupyHouse;
+// Occupy the building
+_missedUnits = [position _building, _convoyUnitsExceptGunners, -1] call Zen_OccupyHouse;
+
+// Try to find another building for any leftovers
+if(count _missedUnits > 0) then
+{
+	_missedUnits = [position _building, _missedUnits, 30] call Zen_OccupyHouse;
+};
 
 _wasTalkDone = false;
 
@@ -273,3 +308,9 @@ addMissionEventHandler ["EachFrame", {
 		_convoyGroup setCombatMode "YELLOW";
 	};
  }, [_convoy, _convoyUnits, _dmpDefend]];
+
+// Check for something breaking in generation
+if((_convoy select 0) distance [0, 0] < 5) then
+{
+	hint "MISSION FAILED TO GENERATE. Restart required";
+};
