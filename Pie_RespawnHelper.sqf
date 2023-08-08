@@ -2,23 +2,24 @@
 Respawn setup for missions. Needs a marker position to respawn by default (2 seconds recommended), then go to spectator until the admin allows for reJIP.
 Default spawns at the first found alive player, can also change to respawn in a set vehicle
 
-initServer.sqf: 
+init.sqf: 
 	Pie_RespawnHelper = compileFinal preprocessFileLineNumbers "globalScripts\Pie_RespawnHelper.sqf";  
 	[] call Pie_RespawnHelper;
-initPlayerLocal.sqf:
-	Pie_RespawnHelper = compileFinal preprocessFileLineNumbers "globalScripts\Pie_RespawnHelper.sqf";  
 */
 
-addMissionEventHandler ["EntityRespawned", {
-	params ["_newEntity", "_oldEntity"];
+if(isServer) then
+{
+	addMissionEventHandler ["EntityRespawned", {
+		params ["_newEntity", "_oldEntity"];
 
-	[{
-		[] call ace_spectator_fnc_setSpectator;
-		[allPlayers] call ace_spectator_fnc_updateUnits;
-		[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
-		[[-2, -1], [0, 1, 2]] call ace_spectator_fnc_updateVisionModes;
-	}] remoteExec ["call", owner _newEntity];
-}];
+		[{
+			[] call ace_spectator_fnc_setSpectator;
+			[allPlayers] call ace_spectator_fnc_updateUnits;
+			[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
+			[[-2, -1], [0, 1, 2]] call ace_spectator_fnc_updateVisionModes;
+		}] remoteExec ["call", owner _newEntity];
+	}];
+};
 
 Pie_fnc_DoRejoin = {
 	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
@@ -63,9 +64,7 @@ Pie_fnc_ClearRejoinVic = {
 	};
 };
 
-[{
-	player createDiarySubject ["Gameplay", "Gameplay"];
-	player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_ClearRejoinVic'Clear rejoin vehicle</execute></font color>"]];
-	player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_SetRejoinVic'>Set as rejoin vehicle</execute></font color>"]];
-	player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_DoRejoin'>Rejoin all</execute></font color>"]];
-}] remoteExec ["call"];
+player createDiarySubject ["Gameplay", "Gameplay"];
+player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_ClearRejoinVic'Clear rejoin vehicle</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_SetRejoinVic'>Set as rejoin vehicle</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_DoRejoin'>Rejoin all</execute></font color>"]];
