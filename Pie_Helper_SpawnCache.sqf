@@ -8,7 +8,7 @@ Usage:
 
 _pos = _this param [0, [0, 0, 0]];
 _radius = _this param [1, 250];
-_class = _this param [1, "Box_FIA_Ammo_F"];
+_class = _this param [2, "Box_FIA_Ammo_F"];
 
 _buildings = [_pos, _radius] call DMP_fnc_GetOpenBuildings;
 { 
