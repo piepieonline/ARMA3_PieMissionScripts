@@ -1,5 +1,5 @@
 /*
-Helper script
+Helper script to spawn a cache in a random building position, within a given radius
 
 Usage:
 	Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pie_Helper_SpawnCache.sqf";
