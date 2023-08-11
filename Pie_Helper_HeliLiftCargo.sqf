@@ -40,9 +40,15 @@ if(_heliToUse canSlingLoad _itemToLift) then
 	[driver _heliToUse, 'Cargo lift on the way'] remoteExec ['sideChat'];
 	_grp = group driver _heliToUse;
 
+	_moveToWP = _grp addWaypoint [position _itemToLift, 0];
+	_moveToWP setWaypointSpeed "FULL";
+
 	_liftWP = _grp addWaypoint [position _itemToLift, 0];
 	_liftWP waypointAttachVehicle _itemToLift;
 	_liftWP setWaypointType "HOOK";
+
+	_moveFromWP = _grp addWaypoint [_heliToUse getRelPos [20, 0], 0];
+	_moveFromWP setWaypointSpeed "FULL";
 
 	_dropWP = _grp addWaypoint [_heliToUse getRelPos [20, 0], 0];
 	_dropWP setWaypointType "UNHOOK";
