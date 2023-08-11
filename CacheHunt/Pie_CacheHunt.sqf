@@ -56,7 +56,6 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 
 	_selectedTown = selectRandom _aoTowns;
 	_cache = [position (_selectedTown), 250, "IG_supplyCrate_F"] call Pie_Helper_SpawnCache;
-	[_cache, true, [0, 2, 0], 0, true] call ace_dragging_fnc_setDraggable;
 	_cachePosition = position _cache;
 	missionNamespace setVariable ["Pie_CachePosition", _cachePosition];
 
@@ -72,23 +71,42 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 
 	// Create the task, and a trigger to complete it
 	_taskTownNameList = (_aoTowns apply { "<marker name='aoTown_" + text _x + "'>" + text _x + "</marker>" }) joinString ", ";
-	[true, "PieTask1", ["A cache has been reported somewhere in the vicinty of " + _taskTownNameList, "Find and destroy the insurgent cache"], objNull, "ASSIGNED", -1, true, "Destroy", false] call BIS_fnc_taskCreate;
-	_cache addEventHandler ["Killed",{
-		["PieTask1", "SUCCEEDED"] call BIS_fnc_taskSetState;
-		[true, "PieTask2", ["Mission complete, return to base", "RTB"], getMarkerPos "respawn", "ASSIGNED", -1, true, "GetOut", true] call BIS_fnc_taskCreate;
 
-		{
-			if(((leader _x) getvariable ["dmpfaction", ""]) == "ResistanceArmour") then
+	// Depending on the mission variant, create different objectives
+
+	if((["destroyInPlace", 1] call BIS_fnc_getParamValue) == 1) then
+	{
+		// Destroy in place
+		[true, "PieTask1", ["A insurgent cache that needs to be destroyed has been reported somewhere in the vicinty of " + _taskTownNameList, "Find and destroy the cache"], objNull, "ASSIGNED", -1, true, "Destroy", false] call BIS_fnc_taskCreate;
+		_cache addEventHandler ["Killed",{
+			["PieTask1", "SUCCEEDED"] call BIS_fnc_taskSetState;
+			[true, "PieTask2", ["Mission complete, return to base", "RTB"], getMarkerPos "respawn", "ASSIGNED", -1, true, "GetOut", true] call BIS_fnc_taskCreate;
+			[] call Pie_fnc_SendCacheQRF;
+		}];
+	}
+	else
+	{
+		// Get it back to base
+		// Only draggable in this case, so the mission can be played without ACE
+		[_cache, true, [0, 2, 0], 0, true] call ace_dragging_fnc_setDraggable;
+		[true, "PieTask1", ["A insurgent cache that needs to be retrieved has been reported somewhere in the vicinty of " + _taskTownNameList, "Find and retrieve the cache"], objNull, "ASSIGNED", -1, true, "Container", false] call BIS_fnc_taskCreate;
+		[_cache, _cachePosition] spawn {
+			params ["_cache", "_cachePosition"];
+			// Wait for the cache to start moving before sending QRF
+			while { _cachePosition distance2D _cache < 20 } do
 			{
-				_x setVariable["dmpAIcurrent","",TRUE];
-				{
-					deleteWaypoint _x
-				} forEach (waypoints _x);
-				_x addWaypoint [missionNamespace getVariable "Pie_CachePosition", -1];
-				break;
+				sleep 2;
 			};
-		} forEach allGroups; 
-	}];
+			[] call Pie_fnc_SendCacheQRF;
+			// Wait for it to arrive at base before setting RTB task
+			while { getMarkerPos "respawn" distance2D _cache > 200 } do
+			{
+				sleep 2;
+			};
+			["PieTask1", "SUCCEEDED"] call BIS_fnc_taskSetState;
+			[true, "PieTask2", ["Mission complete, return to base", "RTB"], getMarkerPos "respawn", "ASSIGNED", -1, true, "GetOut", true] call BIS_fnc_taskCreate;
+		}
+	};
 
 	// Garrison troops around the cache
 	_missedUnits = [_cachePosition, units garrisonForce] call Zen_OccupyHouse;
@@ -99,8 +117,8 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 	} forEach _missedUnits;
 
 	// Create intel system
-	[_aoCenter, _cache, _selectedTown] spawn {
-		params ["_aoCenter", "_cache", "_selectedTown"];
+	[_aoCenter, _cache, _cachePosition, _selectedTown] spawn {
+		params ["_aoCenter", "_cache", "_cachePosition", "_selectedTown"];
 		_knowledge = createGroup sideLogic createUnit ["DMP_KnowledgeSpecial", _aoCenter, [], 0, "NONE"];
 		_knowledge setVariable ["dmpKnowledgeSpecial", "nothing"];
 
@@ -138,4 +156,19 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 			sleep 1;
 		}; 
 	} 
-}
+};
+
+Pie_fnc_SendCacheQRF = {
+	{
+		if(((leader _x) getvariable ["dmpfaction", ""]) == "ResistanceArmour") then
+		{
+			_x setVariable["dmpAIcurrent","",TRUE];
+			{
+				deleteWaypoint _x
+			} forEach (waypoints _x);
+			_qrfWpt = _x addWaypoint [missionNamespace getVariable "Pie_CachePosition", -1];
+			_qrfWpt setWaypointSpeed "FULL";
+			break;
+		};
+	} forEach allGroups; 
+};
