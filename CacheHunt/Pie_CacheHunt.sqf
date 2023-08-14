@@ -88,7 +88,8 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 	{
 		// Get it back to base
 		// Only draggable in this case, so the mission can be played without ACE
-		[_cache, true, [0, 2, 0], 0, true] call ace_dragging_fnc_setDraggable;
+		
+		[_cache, true, [0, 2, 0], 0, true] remoteExec ["ace_dragging_fnc_setDraggable"];
 		[true, "PieTask1", ["A insurgent cache that needs to be retrieved has been reported somewhere in the vicinty of " + _taskTownNameList, "Find and retrieve the cache"], objNull, "ASSIGNED", -1, true, "Container", false] call BIS_fnc_taskCreate;
 		[_cache, _cachePosition] spawn {
 			params ["_cache", "_cachePosition"];
@@ -131,7 +132,7 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 		{
 			if(!alive _cache) then
 			{
-				_knowledge setVariable ["dmpKnowledgeSpecial", "nothing"];
+				_knowledge setVariable ["dmpKnowledgeSpecial", "nothing", true];
 				break;
 			};
 
@@ -143,13 +144,13 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 			switch (true) do
 			{
 				case (_minDistSqrCache < _MaxDistExact): {
-					_knowledge setVariable ["dmpKnowledgeSpecial", "a cache " + ([_cachePosition, (position _selectedTown)] call DMP_fnc_ClosestPosition) + " of centre of the town"];
+					_knowledge setVariable ["dmpKnowledgeSpecial", "a cache " + ([_cachePosition, (position _selectedTown)] call DMP_fnc_ClosestPosition) + " of centre of the town", true];
 				};
 				case (_minDistSqrTown < _MaxDistSomething): {
-					_knowledge setVariable ["dmpKnowledgeSpecial", "a cache somewhere around"];
+					_knowledge setVariable ["dmpKnowledgeSpecial", "a cache somewhere around", true];
 				};
 				default {
-					_knowledge setVariable ["dmpKnowledgeSpecial", "nothing"];
+					_knowledge setVariable ["dmpKnowledgeSpecial", "nothing", true];
 				}
 			};
 
