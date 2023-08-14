@@ -30,13 +30,21 @@ if(isNull _heliToUse) then
 	}
 };
 
-if(isNull _heliToUse || isNull _itemToLift) exitWith
+if(isNull _heliToUse) exitWith
 {
-	['Heli Lift failed'] remoteExec ['systemChat'];
+	['Heli Lift failed (No helicopter found)'] remoteExec ['systemChat'];
+};
+
+if(isNull _itemToLift) exitWith
+{
+	['Heli Lift failed (No item to lift)'] remoteExec ['systemChat'];
 };
 
 if(_heliToUse canSlingLoad _itemToLift) then
 {
+	_padPosition = _heliToUse getVariable ["Pie_Helipad", position _heliToUse];
+	_cargoPosition = missionNamespace getVariable ["Pie_Mis_CargoDropArea", _heliToUse getRelPos [20, 0]];
+
 	[driver _heliToUse, 'Cargo lift on the way'] remoteExec ['sideChat'];
 	_grp = group driver _heliToUse;
 
@@ -47,12 +55,15 @@ if(_heliToUse canSlingLoad _itemToLift) then
 	_liftWP waypointAttachVehicle _itemToLift;
 	_liftWP setWaypointType "HOOK";
 
-	_moveFromWP = _grp addWaypoint [_heliToUse getRelPos [20, 0], 0];
+	_moveFromWP = _grp addWaypoint [_cargoPosition, 0];
 	_moveFromWP setWaypointSpeed "FULL";
 
-	_dropWP = _grp addWaypoint [_heliToUse getRelPos [20, 0], 0];
+	_dropWP = _grp addWaypoint [_cargoPosition, 0];
 	_dropWP setWaypointType "UNHOOK";
-	_dropWP setWaypointStatements ["true", "vehicle leader this land 'LAND'"];
+
+	_moveToPad = _grp addWaypoint [_padPosition, 0];
+	_moveToPad setWaypointSpeed "FULL";
+	_moveToPad setWaypointStatements ["true", "vehicle leader this land 'LAND'"];
 }
 else
 {
