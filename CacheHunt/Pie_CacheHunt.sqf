@@ -50,6 +50,10 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 	// Force the modules to init
 	Pie_Mis_OccupiedTownModules call BIS_fnc_initModules;
 
+	// Make sure the dynamic faction selection is complete, then start DMP
+	waitUntil{missionNamespace getVariable ["Pie_DynFac_Ready", false]};
+	dmpWaitForGo = false;
+
 	// Before spawning the actual cache, we need DMP to be ready
 	waitUntil{!(isNil"dmpReady")};
 	waitUntil{dmpReady};
@@ -110,7 +114,8 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 	};
 
 	// Garrison troops around the cache
-	_missedUnits = [_cachePosition, units garrisonForce] call Zen_OccupyHouse;
+	_garrisonForceGroup = [_aoCenter, resistance, (missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "StaticSquadComposition"] call BIS_fnc_spawnGroup;
+	_missedUnits = [_cachePosition, units _garrisonForceGroup] call Zen_OccupyHouse;
 
 	// TODO: Better system than just deleting overflow
 	{
@@ -156,7 +161,7 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 
 			sleep 1;
 		}; 
-	} 
+	};
 };
 
 Pie_fnc_SendCacheQRF = {
