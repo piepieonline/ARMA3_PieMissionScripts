@@ -1,7 +1,8 @@
 if(isServer) then
 {
-	_supplySetup = _this param [0, "IG_supplyCrate_F" createVehicle (player getRelPos [5, 0])];
-	_addArsenal = _this param [1, true];
+	_missionSetupInteractionPoint = _this param [0, objNull];
+	_supplySetup = _this param [1, "IG_supplyCrate_F" createVehicle (player getRelPos [5, 0])];
+	_addArsenal = _this param [2, true];
 
 	if(_addArsenal) then
 	{
@@ -12,7 +13,7 @@ if(isServer) then
 	missionNamespace setVariable ["Pie_Mis_SelectedFaction", configFile >> "cfgFactionClasses" >> faction player, true];
 
 	[
-		_supplySetup, ["Choose player faction", {
+		_missionSetupInteractionPoint, ["Choose player faction", {
 			[] call Pie_fnc_DynPlayerFaction_ChooseFaction;
 		},
 		nil, 1.5, true, true, "", "true", 5]

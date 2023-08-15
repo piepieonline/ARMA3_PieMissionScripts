@@ -60,8 +60,9 @@ Pie_fnc_DynFaction_ChooseFaction = {
 		_factionGoButton ctrlAddEventHandler ["ButtonClick",
 		{
 			[
-				[] call compile preprocessFileLineNumbers (format ["globalScripts\DynamicFactions\%1.sqf", missionNamespace getVariable "Pie_Mis_SelectedOPFORFaction"])
-			] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSpawner.sqf";
+				[] call compile preprocessFileLineNumbers (format ["globalScripts\DynamicFactions\%1.sqf", missionNamespace getVariable "Pie_Mis_SelectedOPFORFaction"]),
+				"globalScripts\DynamicFactions\Pie_DynamicDMPFactionSpawner.sqf"
+			] remoteExec ["execVM", 2];
 			closeDialog 1;
 		}];
 
