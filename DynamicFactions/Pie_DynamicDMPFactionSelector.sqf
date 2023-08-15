@@ -5,7 +5,7 @@
 if(isServer) then
 {
 	_interactionPoint = _this param [0, objNull];
-	_factionFileList = _this param [1, [["FIA", "CacheHunt\FIA"]]];
+	_factionFileList = _this param [1, [["FIA", "CacheHunt\FIA", "IND_G_F"]]];
 
 	missionNamespace setVariable ["Pie_Mis_OPFORFactions", _factionFileList, true];
 	missionNamespace setVariable ["Pie_Mis_SelectedOPFORFaction", missionNamespace getVariable "Pie_Mis_OPFORFactions" select 0, true];
@@ -34,9 +34,12 @@ Pie_fnc_DynFaction_ChooseFaction = {
 		{
 			_displayName = _x select 0;
 			_fileName = _x select 1;
-
-			_item = _factionDropdown lbAdd _displayName;
-			_factionDropdown lbSetData [_item, _fileName];
+			_className = _x select 2;
+			if(isClass (configFile >> "cfgFactionClasses" >> _className)) then
+			{
+				_item = _factionDropdown lbAdd _displayName;
+				_factionDropdown lbSetData [_item, _fileName];
+			};
 		} forEach (missionNamespace getVariable "Pie_Mis_OPFORFactions");
 
 		_factionDropdown ctrlAddEventHandler ["LBSelChanged",

@@ -1,5 +1,9 @@
 createHashMapFromArray [
 	[
+		"FactionClass",
+		"IND_G_F"
+	],
+	[
 		"DMPModules",
 		[
 			createHashMapFromArray [

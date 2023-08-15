@@ -1,5 +1,9 @@
 createHashMapFromArray [
 	[
+		"FactionClass",
+		"PIE_LocalEuro"
+	],
+	[
 		"DMPModules",
 		[
 			createHashMapFromArray [

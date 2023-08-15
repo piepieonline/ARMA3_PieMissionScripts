@@ -3,8 +3,7 @@ Respawn setup for missions. Needs a marker position to respawn by default (2 sec
 Default spawns at the first found alive player, can also change to respawn in a set vehicle
 
 init.sqf: 
-	Pie_RespawnHelper = compileFinal preprocessFileLineNumbers "globalScripts\Pie_RespawnHelper.sqf";  
-	[] call Pie_RespawnHelper;
+	[] execVM "globalScripts\Pie_RespawnHelper.sqf";
 */
 
 if(isServer) then
