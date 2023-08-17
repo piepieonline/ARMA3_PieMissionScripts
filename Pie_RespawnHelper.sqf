@@ -58,7 +58,7 @@ Pie_fnc_ClearRejoinVic = {
 		if(vehicle player != player) then
 		{
 			missionNamespace setVariable ["PieRespawn_RespawnVic", objNull, true];
-			hint ("Respawn vehicle clear");
+			hint ("Respawn vehicle cleared");
 		};
 	};
 };

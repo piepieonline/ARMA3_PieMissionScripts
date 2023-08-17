@@ -1,4 +1,4 @@
-Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\Zen_OccupyHouse.sqf";
+Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\_ThirdParty\Zen_OccupyHouse.sqf";
 
 // TODO: Extract location not moving properly potentially
 // TODO: Will fail to generate if it doesn't find multiple pieces of road, instead of a dead end

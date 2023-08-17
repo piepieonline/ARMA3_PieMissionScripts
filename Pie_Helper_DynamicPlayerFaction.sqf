@@ -1,7 +1,7 @@
 if(isServer) then
 {
 	_missionSetupInteractionPoint = _this param [0, objNull];
-	_supplySetup = _this param [1, "IG_supplyCrate_F" createVehicle (player getRelPos [5, 0])];
+	_supplySetup = _this param [1, objNull];
 	_addArsenal = _this param [2, true];
 
 	if(_addArsenal) then
@@ -54,7 +54,7 @@ Pie_fnc_DynPlayerFaction_ChooseFaction = {
 			{
 				_factionList pushBack [_displayName, _x];
 			};
-		} forEach (configProperties [configFile >> "cfgFactionClasses", "(getNumber (_x >> 'side')) <= 2", true]);
+		} forEach (configProperties [configFile >> "cfgFactionClasses", "isClass _x && (getNumber (_x >> 'side')) <= 2", true]);
 
 		_factionList sort true;
 
@@ -112,7 +112,7 @@ Pie_fnc_DynPlayerFaction_ChooseLoadout = {
 
 	{
 		_loadoutList pushBack [getText (_x >> 'displayName'), _x];
-	} forEach (configProperties [configFile >> "CfgVehicles", format ["(getText (_x >> 'unitinfotype') == 'rscunitinfosoldier') and (getText (_x >> 'faction') == '%1')", missionNamespace getVariable "Pie_Mis_SelectedPlayerFaction"], true]);
+	} forEach (configProperties [configFile >> "CfgVehicles", format ["isClass _x && (getText (_x >> 'unitinfotype') == 'rscunitinfosoldier') and (getText (_x >> 'faction') == '%1')", missionNamespace getVariable "Pie_Mis_SelectedPlayerFaction"], true]);
 
 	_loadoutList sort true;
 
