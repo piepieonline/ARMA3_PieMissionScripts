@@ -96,9 +96,9 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 	} forEach nearestLocations [_aoCenter, ["NameCity", "NameCityCapital", "NameVillage"], _aoRadius];
 
 	// Select the AO
-	_town = selectRandom _validTowns;
-	_townPosition = _town select 0;
-	_town deleteAt 0;
+	_townData = selectRandom _validTowns;
+	_town = _townData select 0;
+	_townData deleteAt 0;
 
 	// If defined, shrink the AO to the smaller size
 	if(count _dmpSmallAO > 0) then
@@ -116,12 +116,12 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 
 		_dmpSmallAO = _dmpSmallAO select 0;
 		_dmpCore setVariable ["dmpradius", _dmpSmallAO getVariable "dmpradius"];
-		_dmpCore setPos (position _townPosition);
+		_dmpCore setPos (position _town);
 		deleteVehicle _dmpSmallAO;
 	};
 
 	// Select the building
-	_building = selectRandom _town;
+	_building = selectRandom _townData;
 
 	// Populate the building
 	_garrisonForce = [_aoCenter, resistance, (missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "GarrisonSquadComposition"] call BIS_fnc_spawnGroup;
@@ -135,9 +135,10 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 	_hostage setPos (position (_hostagePositions select 0)); // Eye height ?
 	_hostage allowDamage true;
 
-	if(_hostage distance leader _garrisonForce > 30) then
+	if(_hostage distance position _building > 30) then
 	{
 		hint "Failed to place the hostage!";
+		"generationFailure" call BIS_fnc_endMission;
 	};
 
 	if(_debug) then
@@ -165,7 +166,7 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 		_unit moveInAny _wreckGuard;
 	} forEach ((missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "WreckGuardSquadComposition");
 
-	_wreckGuardGroup addWaypoint [position _wreckGuard] setWaypointType "GUARD";
+	(_wreckGuardGroup addWaypoint [position _wreckGuard, 0]) setWaypointType "GUARD";
 
 	{
 		[(_x select 0)] allowGetIn false;
@@ -177,19 +178,43 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 	} forEach fullCrew [_wreckGuard, "cargo"];
 
 	// Move tasks
-	_dmpTaskRescue setPos (position _townPosition);
+	_dmpTaskRescue setPos (position _town);
 	
 	// Occupy the selected town.
 	_occupiedTownsGroup = createGroup sideLogic;
 	Pie_Mis_OccupiedTownModules = [];
 	// Need to be added to a global list to be initalised properly
 	"DMP_OccupiedTown" createUnit [
-		position _townPosition,
+		position _town,
 		_occupiedTownsGroup,
 		"this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true]; this setVariable ['dmpOccupiedTownFaction', 'Resistance', true]; Pie_Mis_OccupiedTownModules pushBack this;"
 	];
 	// Force the modules to init
 	Pie_Mis_OccupiedTownModules call BIS_fnc_initModules;
 
+	// Create intel to help players find the wreck
+	_heliIntelLine = format ["%1 of here", ([position _town, getMarkerPos "respawn"] call DMP_fnc_ClosestPosition)];
+	_pilotIntelLine = "";
+
+	if((["knownLocation", 1] call BIS_fnc_getParamValue) == 1) then
+	{
+		_heliIntelLine = format ["%1 of %2", ([position _wreckToSpawn, position _town] call DMP_fnc_ClosestPosition), text _town];
+		_pilotIntelLine = format [" and taken somewhere in %1", text _town];
+
+		_markerstr = createMarker [("aoTown"), position _town];
+		_markerstr setMarkerShape "ELLIPSE";
+		_markerstr setMarkerSize [500, 500];
+		_markerstr setMarkerColor "ColorRed";
+		_markerstr setMarkerAlpha 0.5;
+		_markerstr setMarkerBrush "BDiagonal";
+	};
+
+	missionNamespace setVariable ["Pie_Mis_HeliIntelLine", _heliIntelLine, true];
+	missionNamespace setVariable ["Pie_Mis_PilotIntelLine", _pilotIntelLine, true];
+
+	{
+		player createDiaryRecord ["Diary", ["Situation", format ["A helicopter was lost %1, and radio interceptions confirm a pilot has been captured%2.<br />Destroy the wreck, rescue the pilot, and bring them home.", missionNamespace getVariable "Pie_Mis_HeliIntelLine", missionNamespace getVariable "Pie_Mis_PilotIntelLine"]]];	
+	} remoteExec ["call"];
+	
 	dmpWaitForGo = false;
 }
