@@ -21,7 +21,7 @@ createHashMapFromArray [
 				["dmpFactionName", "Resistance"],
 				["dmpFactionSquadSize", "4,8"],
 				["dmpFactionVehicleSize", "1,3"],
-				["dmpFactionPatrols", "10,15"],
+				["dmpFactionPatrols", "0,0"],
 				["dmpFactionPatrolsDeep", "5,5"],
 				["dmpFactionVehiclePatrols", "10,15"],
 				["dmpFactionOccupiedTownPatrols", "3,6"],
@@ -41,7 +41,8 @@ createHashMapFromArray [
 				]],
 				["dmpFactionName", "ResistanceArmour"],
 				["dmpFactionVehicleSize", "1,1"],
-				["dmpFactionVehiclePatrols", "2,5"]
+				["dmpFactionVehiclePatrols", "2,5"],
+				["dmpFactionHelos", "0,3"]
 			]
 		]
 	],

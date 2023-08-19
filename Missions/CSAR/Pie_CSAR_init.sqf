@@ -4,6 +4,7 @@
 
 [setupLaptop, [
 	["European Locals", "CSAR\EuroLocals", "PIE_LocalEuro"],
+	["FIA", "CSAR\FIA", "IND_G_F"],
 	["Russian (Heavy)", "CSAR\RussianHeavy", "CUP_O_RU"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
