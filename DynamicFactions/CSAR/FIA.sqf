@@ -17,13 +17,13 @@ createHashMapFromArray [
 				]],
 				["dmpFactionName", "Resistance"],
 				["dmpFactionSquadSize", "4,8"],
-				["dmpFactionVehicleSize", "1,3"],
+				["dmpFactionVehicleSize", "1,1"],
 				["dmpFactionPatrols", "0,0"],
 				["dmpFactionPatrolsDeep", "5,5"],
 				["dmpFactionVehiclePatrols", "10,15"],
 				["dmpFactionOccupiedTownPatrols", "3,6"],
 				["dmpFactionOccupiedTownGarrisons", "3,4"],
-				["dmpFactionOccupiedTownVehicles", "1,2"]
+				["dmpFactionOccupiedTownVehicles", "1,3"]
 			],
 			createHashMapFromArray [
 				["Pie_Units_Def", [
