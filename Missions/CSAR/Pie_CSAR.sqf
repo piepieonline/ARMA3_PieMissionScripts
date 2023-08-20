@@ -214,7 +214,7 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 
 	{
 		player createDiaryRecord ["Diary", ["Situation", format ["A helicopter was lost %1, and radio interceptions confirm a pilot has been captured%2.<br />Destroy the wreck, rescue the pilot, and bring them home.", missionNamespace getVariable "Pie_Mis_HeliIntelLine", missionNamespace getVariable "Pie_Mis_PilotIntelLine"]]];	
-	} remoteExec ["call"];
+	} remoteExec ["call", 0, true];
 	
 	dmpWaitForGo = false;
 }

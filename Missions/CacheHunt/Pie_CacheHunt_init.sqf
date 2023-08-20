@@ -9,7 +9,10 @@
 	["European Locals", "CacheHunt\EuroLocals", "PIE_LocalEuro"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
+[] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+
 if(isServer) then
 {
+	[] execVM "globalScripts\Pie_Helper_BaseSafeZoneMarker.sqf";
 	[] execVM "globalScripts\Missions\CacheHunt\Pie_CacheHunt.sqf";
 };

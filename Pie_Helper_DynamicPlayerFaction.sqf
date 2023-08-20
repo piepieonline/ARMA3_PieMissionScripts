@@ -6,8 +6,8 @@ if(isServer) then
 
 	if(_addArsenal) then
 	{
-		[_supplySetup, true] remoteExec ["ace_arsenal_fnc_initBox"];
-		["AmmoboxInit", [_supplySetup, true]] remoteExec ["BIS_fnc_arsenal"];
+		[_supplySetup, true] remoteExec ["ace_arsenal_fnc_initBox", 0, true];
+		["AmmoboxInit", [_supplySetup, true]] remoteExec ["BIS_fnc_arsenal", 0, true];
 	};
 
 	missionNamespace setVariable ["Pie_Mis_SelectedFaction", configFile >> "cfgFactionClasses" >> faction player, true];
@@ -17,14 +17,14 @@ if(isServer) then
 			[] call Pie_fnc_DynPlayerFaction_ChooseFaction;
 		},
 		nil, 1.5, true, true, "", "true", 5]
-	] remoteExec ["addAction"];
+	] remoteExec ["addAction", 0, true];
 
 	[
 		_supplySetup, ["Choose loadout", {
 			[] call Pie_fnc_DynPlayerFaction_ChooseLoadout;
 		},
 		nil, 1.5, true, true, "", "true", 5]
-	] remoteExec ["addAction"];
+	] remoteExec ["addAction", 0, true];
 };
 
 Pie_fnc_DynPlayerFaction_ChooseFaction = {

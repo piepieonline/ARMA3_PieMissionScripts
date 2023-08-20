@@ -8,7 +8,10 @@
 	["Russian (Heavy)", "CSAR\RussianHeavy", "CUP_O_RU"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
+[] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+
 if(isServer) then
 {
+	[] execVM "globalScripts\Pie_Helper_BaseSafeZoneMarker.sqf";
 	[hostage, wreckToSpawn] execVM "globalScripts\Missions\CSAR\Pie_CSAR.sqf";
 };

@@ -1,5 +1,10 @@
-Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\_ThirdParty\Zen_OccupyHouse.sqf";
+/*
+TODO:
+	civi stop spawning - dro bug
+	hud breaking on rejip, sometimes?
+*/
 
+Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\_ThirdParty\Zen_OccupyHouse.sqf";
 Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pie_Helper_SpawnCache.sqf";
 
 [] spawn {
@@ -93,7 +98,7 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 		// Get it back to base
 		// Only draggable in this case, so the mission can be played without ACE
 		
-		[_cache, true, [0, 2, 0], 0, true] remoteExec ["ace_dragging_fnc_setDraggable"];
+		[_cache, true, [0, 2, 0], 0, true] remoteExec ["ace_dragging_fnc_setDraggable", 0, true];
 		[true, "PieTask1", ["A insurgent cache that needs to be retrieved has been reported somewhere in the vicinty of " + _taskTownNameList, "Find and retrieve the cache"], objNull, "ASSIGNED", -1, true, "Container", false] call BIS_fnc_taskCreate;
 		[_cache, _cachePosition] spawn {
 			params ["_cache", "_cachePosition"];
@@ -128,13 +133,13 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 		_knowledge = createGroup sideLogic createUnit ["DMP_KnowledgeSpecial", _aoCenter, [], 0, "NONE"];
 		_knowledge setVariable ["dmpKnowledgeSpecial", "nothing"];
 
-		_minDistSqrCache = 10000 ^ 2;
-		_minDistSqrTown = 10000 ^ 2;
-
 		_MaxDistSomething = 500 ^ 2;
-		_MaxDistExact = 100 ^ 2;
+		_MaxDistExact = 150 ^ 2;
 		while { true } do 
 		{
+			_minDistSqrCache = 10000 ^ 2;
+			_minDistSqrTown = 10000 ^ 2;
+
 			if(!alive _cache) then
 			{
 				_knowledge setVariable ["dmpKnowledgeSpecial", "nothing", true];
@@ -142,20 +147,28 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 			};
 
 			{
-				_minDistSqrCache = _minDistSqrCache min (_cache distanceSqr _x);
-				_minDistSqrTown = _minDistSqrTown min ((position _selectedTown) distanceSqr _x);
+				// Only check for players on foot
+				if(vehicle _x == _x) then
+				{
+					_minDistSqrCache = _minDistSqrCache min (_cache distanceSqr _x);
+					_minDistSqrTown = _minDistSqrTown min ((position _selectedTown) distanceSqr _x);
+				};
 			} forEach allPlayers;
 			
 			switch (true) do
 			{
 				case (_minDistSqrCache < _MaxDistExact): {
-					_knowledge setVariable ["dmpKnowledgeSpecial", "a cache " + ([_cachePosition, (position _selectedTown)] call DMP_fnc_ClosestPosition) + " of centre of the town", true];
+					_knowledge setVariable ["dmpKnowledgeSpecial", format ["a cache %1 of the centre of %2,", ([_cachePosition, (position _selectedTown)] call DMP_fnc_ClosestPosition), text _selectedTown], true];
+					_knowledge setPos position _selectedTown;
+					//_knowledge setPos _cachePosition;
 				};
 				case (_minDistSqrTown < _MaxDistSomething): {
-					_knowledge setVariable ["dmpKnowledgeSpecial", "a cache somewhere around", true];
+					_knowledge setVariable ["dmpKnowledgeSpecial", format ["a cache somewhere around %1,", text _selectedTown], true];
+					_knowledge setPos position _selectedTown;
 				};
 				default {
 					_knowledge setVariable ["dmpKnowledgeSpecial", "nothing", true];
+					_knowledge setPos _aoCenter;
 				}
 			};
 

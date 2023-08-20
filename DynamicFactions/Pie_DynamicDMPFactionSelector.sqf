@@ -15,7 +15,7 @@ if(isServer) then
 			[] call Pie_fnc_DynFaction_ChooseFaction;
 		},
 		nil, 1.5, true, true, "", "true", 5]
-	] remoteExec ["addAction"];
+	] remoteExec ["addAction", 0, true];
 };
 
 Pie_fnc_DynFaction_ChooseFaction = {
