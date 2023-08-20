@@ -12,6 +12,13 @@ if(isServer) then
 		params ["_newEntity", "_oldEntity"];
 
 		[{
+			_playerLoadout = localNamespace getVariable ["Pie_Respawn_Loadout", []];
+
+			if(count _playerLoadout > 0) then
+			{
+				player setUnitLoadout _playerLoadout;
+			};
+
 			[] call ace_spectator_fnc_setSpectator;
 			[allPlayers] call ace_spectator_fnc_updateUnits;
 			[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
@@ -21,6 +28,7 @@ if(isServer) then
 };
 
 Pie_fnc_DoRejoin = {
+	params ["_location"];
 	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
 		[{
 			_deadPlayers = [] call ace_spectator_fnc_players;
@@ -28,14 +36,17 @@ Pie_fnc_DoRejoin = {
 			if(player in _deadPlayers) then
 			{
 				_respawnVic = missionNamespace getVariable ["PieRespawn_RespawnVic", objNull]; 
-				if(!isNull _respawnVic && alive _respawnVic) then
+				if(_location == "vic" && !isNull _respawnVic && alive _respawnVic) then
 				{
 					player moveInAny _respawnVic;
 				}
 				else
 				{
-					player setPosATL (getPosATL (_alivePlayers select 0));
-				}
+					if(_location == "team") then
+					{
+						player setPosATL (getPosATL (_alivePlayers select 0));
+					};
+				};
 			};
 
 			[false] call ace_spectator_fnc_setSpectator;
@@ -63,7 +74,36 @@ Pie_fnc_ClearRejoinVic = {
 	};
 };
 
+Pie_fnc_SaveRespawnLoadout = {
+	localNamespace setVariable ["Pie_Respawn_Loadout", getUnitLoadout player];
+};
+
+Pie_fnc_SaveAllRespawnLoadouts = {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+		[] remoteExec ["Pie_fnc_SaveRespawnLoadout"];
+	};
+};
+
+Pie_fnc_ResetAllLoadouts = {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+		[{
+			_playerLoadout = localNamespace getVariable ["Pie_Respawn_Loadout", []];
+
+			if(count _playerLoadout > 0) then
+			{
+				player setUnitLoadout _playerLoadout;
+			};
+		}] remoteExec ["call"];
+	};
+};
+
 player createDiarySubject ["Gameplay", "Gameplay"];
-player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_ClearRejoinVic'Clear rejoin vehicle</execute></font color>"]];
-player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_SetRejoinVic'>Set as rejoin vehicle</execute></font color>"]];
-player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_DoRejoin'>Rejoin all</execute></font color>"]];
+// Inverted order, last entry at the top
+player createDiaryRecord ["Gameplay", ["Rejoin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_SaveRespawnLoadout'>Save loadout</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_ResetAllLoadouts'>Reset all player loadouts</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_SaveAllRespawnLoadouts'>Save all loadouts</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_ClearRejoinVic'>Clear rejoin vehicle</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[] call Pie_fnc_SetRejoinVic'>Set as rejoin vehicle</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[""vic""] call Pie_fnc_DoRejoin'>Rejoin all to vehicle</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[""team""] call Pie_fnc_DoRejoin'>Rejoin all to player</execute></font color>"]];
+player createDiaryRecord ["Gameplay", ["Rejoin - Admin", "<font color='#33CC33'><execute expression = '[""base""] call Pie_fnc_DoRejoin'>Rejoin all to base</execute></font color>"]];
