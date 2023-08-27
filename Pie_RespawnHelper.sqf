@@ -8,6 +8,13 @@ init.sqf:
 
 if(isServer) then
 {
+	// Move the marker to the first player's spawn location (otherwise it's always ASL, doesn't work with the carrier)
+	[] spawn {
+		waitUntil { time > 0 };
+		"respawn" setMarkerPos (allPlayers select 0);
+	};
+
+	// When someone respawns, put them in spectator mode
 	addMissionEventHandler ["EntityRespawned", {
 		params ["_newEntity", "_oldEntity"];
 
@@ -20,7 +27,7 @@ if(isServer) then
 			};
 
 			[] call ace_spectator_fnc_setSpectator;
-			[allPlayers] call ace_spectator_fnc_updateUnits;
+			[(allPlayers - [player])] call ace_spectator_fnc_updateUnits;
 			[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
 			[[-2, -1], [0, 1, 2]] call ace_spectator_fnc_updateVisionModes;
 		}] remoteExec ["call", owner _newEntity];
@@ -30,21 +37,44 @@ if(isServer) then
 Pie_fnc_DoRejoin = {
 	params ["_location"];
 	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+		// Select the same respawn player for all respawners
+		// Use the admin by default
+		_respawnPlayer = player;
+
+		_deadPlayers = [] call ace_spectator_fnc_players;
+		_alivePlayers = (allPlayers - _deadPlayers) select {alive _x};
+		// If the admin is dead, use the first player we find
+		if(!(player in _alivePlayers)) then
+		{
+			if(count _alivePlayers > 0) then
+			{
+				_respawnPlayer = _alivePlayers select 0;
+			}
+			else
+			{
+				// No one is alive, we don't have a valid respawn player
+				_respawnPlayer = objNull;
+			};
+		};
+
+		missionNamespace setVariable ["PieRespawn_RespawnPlayer", _respawnPlayer, true];
+		missionNamespace setVariable ["PieRespawn_RespawnLocation", _location, true];
 		[{
 			_deadPlayers = [] call ace_spectator_fnc_players;
-			_alivePlayers = allPlayers - _deadPlayers;
+			_location = missionNamespace getVariable ["PieRespawn_RespawnLocation", "base"];
+			_respawnPlayer = missionNamespace getVariable ["PieRespawn_RespawnPlayer", objNull];
 			if(player in _deadPlayers) then
 			{
-				_respawnVic = missionNamespace getVariable ["PieRespawn_RespawnVic", objNull]; 
+				_respawnVic = missionNamespace getVariable ["PieRespawn_RespawnVic", objNull];
 				if(_location == "vic" && !isNull _respawnVic && alive _respawnVic) then
 				{
 					player moveInAny _respawnVic;
 				}
 				else
 				{
-					if(_location == "team") then
+					if((_location == "team" || _location == "player") && !isNull _respawnPlayer) then
 					{
-						player setPosATL (getPosATL (_alivePlayers select 0));
+						player setPosATL (getPosATL _respawnPlayer);
 					};
 				};
 			};
@@ -59,7 +89,7 @@ Pie_fnc_SetRejoinVic = {
 		if(vehicle player != player) then
 		{
 			missionNamespace setVariable ["PieRespawn_RespawnVic", vehicle player, true];
-			hint ("Respawn vehicle set: " + (str vehicle player));
+			hint ("Respawn vehicle set: " + (typeof vehicle player));
 		};
 	};
 };
