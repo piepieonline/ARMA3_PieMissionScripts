@@ -5,7 +5,8 @@
 [setupLaptop, [
 	["European Locals", "CSAR\EuroLocals", "PIE_LocalEuro"],
 	["FIA", "CSAR\FIA", "IND_G_F"],
-	["Russian (Heavy)", "CSAR\RussianHeavy", "CUP_O_RU"]
+	["Russian (Heavy)", "CSAR\RussianHeavy", "CUP_O_RU"],
+	["Takistan Locals", "CSAR\TakiLocals", "CUP_I_TK_GUE"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
 [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
@@ -23,5 +24,8 @@ player addEventHandler ["TaskSetAsCurrent", {
 
 	_desc = _retTask call BIS_fnc_taskDescription;
 
-	[_retTask, ["", _desc select 1, _desc select 2]] call BIS_fnc_taskSetDescription;
+	if(count _desc > 0) then
+	{
+		[_retTask, ["", _desc select 1, _desc select 2]] call BIS_fnc_taskSetDescription;
+	};
 }];

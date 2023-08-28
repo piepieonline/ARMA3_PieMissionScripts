@@ -6,7 +6,8 @@
 
 [setupLaptop, [
 	["FIA", "CacheHunt\FIA", "IND_G_F"],
-	["European Locals", "CacheHunt\EuroLocals", "PIE_LocalEuro"]
+	["European Locals", "CacheHunt\EuroLocals", "PIE_LocalEuro"],
+	["Takistan Locals", "CacheHunt\TakiLocals", "CUP_I_TK_GUE"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
 [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";

@@ -1,20 +1,21 @@
 createHashMapFromArray [
 	[
 		"FactionClass",
-		"PIE_LocalEuro"
+		"CUP_I_TK_GUE"
 	],
 	[
 		"DMPModules",
 		[
 			createHashMapFromArray [
 				["Pie_Units_Def", [
-					[["PIE_LocalEuro_Warlord"], "SERGEANT"],
-					[["PIE_LocalEuro_Guerilla_Crewman"], "CAPTAIN"],
-					[["PIE_LocalEuro_Guerilla_Pilot"], "MAJOR"],
-					[["PIE_LocalEuro_Guerilla_AKS", "PIE_LocalEuro_Guerilla_AK15_GL", "PIE_LocalEuro_Guerilla_Light", "PIE_LocalEuro_Guerilla_RPK", "PIE_LocalEuro_Guerilla_RPG", "PIE_LocalEuro_Guerilla_AKM", "PIE_LocalEuro_Guerilla_FN_FAL"]]
+					[["CUP_I_TK_GUE_Soldier_TL"], "SERGEANT"],
+					[["CUP_O_TK_Crew"], "CAPTAIN"],
+					[["CUP_O_TK_Pilot"], "MAJOR"],
+					[["CUP_I_TK_GUE_Demo", "CUP_I_TK_GUE_Guerilla_Enfield", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Mechanic", "CUP_I_TK_GUE_Soldier", "CUP_I_TK_GUE_Soldier_AK_47S", "CUP_I_TK_GUE_Soldier_AR", "CUP_I_TK_GUE_Soldier_AT", "CUP_I_TK_GUE_Soldier_GL", "CUP_I_TK_GUE_Soldier_M16A2", "CUP_I_TK_GUE_Soldier_MG"]]
 				]],
 				["Pie_Vehicles_Def", [
-					"PIE_LocalEuro_HMG_technical",
+					"CUP_I_Datsun_PK_TK_Random",
+					"I_G_Offroad_01_armed_F",
 					"CUP_I_BRDM2_HQ_TK_GUE",
 					"CUP_I_BTR40_MG_TKG"
 				]],
@@ -30,8 +31,8 @@ createHashMapFromArray [
 			],
 			createHashMapFromArray [
 				["Pie_Units_Def", [
-					[["PIE_LocalEuro_Guerilla_Crewman"], "CAPTAIN"],
-					[["PIE_LocalEuro_Guerilla_Pilot"], "MAJOR"]
+					[["CUP_O_TK_Crew"], "CAPTAIN"],
+					[["CUP_O_TK_Pilot"], "MAJOR"]
 				]],
 				["Pie_Vehicles_Def", [
 					"CUP_I_T34_TK_GUE",
@@ -48,14 +49,14 @@ createHashMapFromArray [
 	],
 	[
 		"GarrisonSquadComposition",
-		["PIE_LocalEuro_Warlord", "PIE_LocalEuro_Guerilla_Medic", "PIE_LocalEuro_Guerilla_RPK", "PIE_LocalEuro_Guerilla_RPG", "PIE_LocalEuro_Guerilla_AKM", "PIE_LocalEuro_Guerilla_Medic", "PIE_LocalEuro_Guerilla_AK15_GL"]
+		["CUP_I_TK_GUE_Soldier_TL", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Soldier_AR", "CUP_I_TK_GUE_Soldier_AT", "CUP_I_TK_GUE_Soldier_AK_47S", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Soldier_GL"]
 	],
 	[
 		"WreckGuardSquadComposition",
-		["PIE_LocalEuro_Warlord", "PIE_LocalEuro_Guerilla_Medic", "PIE_LocalEuro_Guerilla_RPK", "PIE_LocalEuro_Guerilla_AKM","PIE_LocalEuro_Guerilla_AKS"]
+		["CUP_I_TK_GUE_Soldier_TL", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Soldier_AR", "CUP_I_TK_GUE_Soldier_AK_47S","CUP_I_TK_GUE_Guerilla_Enfield"]
 	],
 	[
 		"WreckGuardVehicle",
-		"PIE_LocalEuro_HMG_technical"
+		"I_G_Offroad_01_armed_F"
 	]
 ];
