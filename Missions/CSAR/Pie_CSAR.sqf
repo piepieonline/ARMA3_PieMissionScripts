@@ -7,6 +7,10 @@ Arsenal box: `["AmmoboxInit",[this,true]] call BIS_fnc_arsenal;`
 Needs:
 - `hostage` hostage unit
 - `wreckToSpawn` wreck object to spawn (pre-attach the crate)
+
+
+make sure the hostage is back before checking objective
+turn off auto-end
 */
 
 private ["_hostage", "_wreckToSpawn"];
@@ -59,13 +63,12 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 			{
 				_validBuildings pushBack _x;
 			};
-		} forEach nearestTerrainObjects [position _town, ["House"], 200];
-
+		} forEach nearestTerrainObjects [position _town, ["House"], 200, false, true];
 
 		// Exclude blacklist areas
 		_isBlacklisted = false;
 		{
-			_distance = (getPos _x) distance (getPos _town);
+			_distance = (getPos _x) distance2D (getPos _town);
 			_maxDistance = _x getVariable "dmpradius";
 
 			if(_distance < _maxDistance) then
@@ -96,7 +99,7 @@ _wreckToSpawn = _this param [1, objNull, [], []];
 	} forEach nearestLocations [_aoCenter, ["NameCity", "NameCityCapital", "NameVillage"], _aoRadius];
 
 	// Select the AO
-	_townData = selectRandom _validTowns;
+	_townData = +(selectRandom _validTowns);
 	_town = _townData select 0;
 	_townData deleteAt 0;
 

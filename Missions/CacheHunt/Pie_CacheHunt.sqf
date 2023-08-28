@@ -12,7 +12,7 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 	_dmpBlacklists = allMissionObjects "dmp_Blacklist";
 
 	_aoCenter = getPos _dmpCore;
-	_aoRadius = ["aoSize", 6500] call BIS_fnc_getParamValue;
+	_aoRadius = ["aoSize", _dmpCore getVariable ["dmpradius", 6500]] call BIS_fnc_getParamValue;
 	_dmpCore setVariable ["dmpradius", _aoRadius, true];
 
 	// Get the blacklisted towns

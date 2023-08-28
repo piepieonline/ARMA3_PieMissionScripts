@@ -116,7 +116,7 @@ else
 
 			_validCompounds pushBack _house;
 		};
-	} forEach nearestTerrainObjects [_aoCenter, ["House"], _aoRadius, false];
+	} forEach nearestTerrainObjects [_aoCenter, ["House"], _aoRadius, false, true];
 
 	// Debug markers for possible spawns
 	if(_debug) then
@@ -136,7 +136,7 @@ else
 			{
 				_suitableBuildings pushBack _x;
 			};
-		} forEach nearestTerrainObjects[_compound, ["House"], _distanceToOthersForSingleCompound, false];
+		} forEach nearestTerrainObjects[_compound, ["House"], _distanceToOthersForSingleCompound, false, true];
 
 		if(count _suitableBuildings > _minCountForCompound) then
 		{
