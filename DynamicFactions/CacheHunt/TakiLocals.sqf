@@ -50,5 +50,16 @@ createHashMapFromArray [
 	[
 		"StaticSquadComposition",
 		["CUP_I_TK_GUE_Soldier_TL", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Soldier_AR", "CUP_I_TK_GUE_Soldier_AT", "CUP_I_TK_GUE_Soldier_AK_47S", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Soldier_GL"]
+	],
+	[
+		"QRF",
+		[
+			createHashMapFromArray [
+				["Vehicle", "CUP_I_BRDM2_TK_GUE"],
+				["Crew", ["CUP_O_TK_Crew", "CUP_O_TK_Crew"]],
+				["Dismounts", ["CUP_I_TK_GUE_Soldier_TL", "CUP_I_TK_GUE_Guerilla_Medic", "CUP_I_TK_GUE_Soldier_AR", "CUP_I_TK_GUE_Soldier_AT", "CUP_I_TK_GUE_Soldier_AK_47S", "CUP_I_TK_GUE_Soldier_GL"]],
+				["VicShouldAssault", true]
+			]
+		]
 	]
 ];

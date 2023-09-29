@@ -41,5 +41,16 @@ createHashMapFromArray [
 	[
 		"StaticSquadComposition",
 		["I_G_Soldier_SL_F", "I_G_medic_F", "I_G_Soldier_AR_F", "I_G_medic_F", "I_G_Soldier_M_F", "I_G_Soldier_F", "I_G_Soldier_LAT2_F"]
+	],
+	[
+		"QRF",
+		[
+			createHashMapFromArray [
+				["Vehicle", "I_G_Offroad_01_F"],
+				["Crew", ["I_G_Soldier_F"]],
+				["Dismounts", ["I_G_Soldier_lite_F", "I_G_medic_F", "I_G_medic_F", "I_G_Soldier_GL_F", "I_G_Soldier_LAT2_F"]],
+				["VicShouldAssault", false]
+			]
+		]
 	]
 ]

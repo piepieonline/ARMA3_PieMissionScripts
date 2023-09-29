@@ -49,5 +49,16 @@ createHashMapFromArray [
 	[
 		"StaticSquadComposition",
 		["PIE_LocalEuro_Warlord", "PIE_LocalEuro_Guerilla_Medic", "PIE_LocalEuro_Guerilla_RPK", "PIE_LocalEuro_Guerilla_RPG", "PIE_LocalEuro_Guerilla_AKM", "PIE_LocalEuro_Guerilla_Medic", "PIE_LocalEuro_Guerilla_AK15_GL"]
+	],
+	[
+		"QRF",
+		[
+			createHashMapFromArray [
+				["Vehicle", "CUP_I_BRDM2_TK_GUE"],
+				["Crew", ["PIE_LocalEuro_Guerilla_Crewman", "PIE_LocalEuro_Guerilla_Crewman"]],
+				["Dismounts", ["CUP_I_UN_CDF_Soldier_MG_MNT", "CUP_I_UN_CDF_Soldier_GL_MNT", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Soldier_LAT_MNT", "CUP_I_UN_CDF_Soldier_AT_MNT", "CUP_I_UN_CDF_Soldier_MNT"]],
+				["VicShouldAssault", true]
+			]
+		]
 	]
 ];

@@ -43,8 +43,23 @@ createHashMapFromArray [
 		"ConvoyUnits",
 		[
 			["CUP_I_M113A3_UN", "CUP_I_UN_CDF_Crew_MNT", "CUP_I_UN_CDF_Crew_MNT"], 
-			["CUP_I_UAZ_Unarmed_UN", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Officer_DST"], 
+			["CUP_I_UAZ_Unarmed_UN", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Officer_DST"], 
 			["CUP_I_M113A3_UN", "CUP_I_UN_CDF_Crew_MNT", "CUP_I_UN_CDF_Crew_MNT"]
+		]
+	],
+	[
+		"HVTClass",
+		"CUP_I_UN_CDF_Officer_DST"
+	],
+	[
+		"QRF",
+		[
+			createHashMapFromArray [
+				["Vehicle", "rhs_uh1h_un"],
+				["Crew", ["CUP_I_UN_CDF_Pilot_MNT", "CUP_I_UN_CDF_Pilot_MNT"]],
+				["Dismounts", ["CUP_I_UN_CDF_Soldier_MG_MNT", "CUP_I_UN_CDF_Soldier_GL_MNT", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Soldier_LAT_MNT", "CUP_I_UN_CDF_Soldier_AT_MNT", "CUP_I_UN_CDF_Soldier_MNT", "CUP_I_UN_CDF_Soldier_MNT"]],
+				["VicShouldAssault", false]
+			]
 		]
 	]
 ]
