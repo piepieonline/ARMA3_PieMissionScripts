@@ -27,14 +27,20 @@
 
 	// Create the convoy units
 	_grp = createGroup resistance;
+	_convVics = [];
 	_convUnits = [];
 	{
 		_roadSeg = ([locationPosition _startTown, 500] call BIS_fnc_nearestRoad);
 		_pos = (getPos _roadSeg);
 
-		if(count _convUnits > 0) then
+		if(count _convVics == 0) then
 		{
-			_roadSeg = ([(_convUnits select 0) getRelPos [(10 * _forEachIndex), 180], 100] call BIS_fnc_nearestRoad);
+			// Clear the town location of buildings
+			{ _x hideObjectGlobal true } foreach (nearestTerrainObjects [_pos, [], 75]);
+		}
+		else
+		{
+			_roadSeg = ([(_convVics select 0) getRelPos [(10 * _forEachIndex), 180], 100] call BIS_fnc_nearestRoad);
 			_pos = (getPos _roadSeg);
 		};
 
@@ -46,16 +52,23 @@
 		{
 			_unit = _grp createUnit [_x, _pos, [], 0, "NONE"];
 			_unit moveInAny _vic;
+
+			if(_x == ((missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "HVTClass")) then
+			{
+				removeAllWeapons _unit;
+			};
+
+			_convUnits pushBack _unit;
 		} forEach(_x);
 
-		_convUnits pushBack _vic;
+		_convVics pushBack _vic;
 		sleep 1;
 	} forEach ((missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "ConvoyUnits");
 
 	// Set the waypoint for the convoy
-	_ambushWP = (group driver (_convUnits select 0)) addWaypoint [getPosASL ([locationPosition _ambushTown, 500] call BIS_fnc_nearestRoad), -1];
+	_ambushWP = (group driver (_convVics select 0)) addWaypoint [getPosASL ([locationPosition _ambushTown, 500] call BIS_fnc_nearestRoad), -1];
 	_ambushWP setWaypointCompletionRadius 30;
-	_endWP = (group driver (_convUnits select 0)) addWaypoint [getPosASL ([locationPosition _endTown, 500] call BIS_fnc_nearestRoad), -1];
+	_endWP = (group driver (_convVics select 0)) addWaypoint [getPosASL ([locationPosition _endTown, 500] call BIS_fnc_nearestRoad), -1];
 	_endWP setWaypointCompletionRadius 30;
 
 	// Occupy some towns around the map.
@@ -92,5 +105,32 @@
 	Convoy_01 setVariable ["behaviourConv", "pushThroughContact"];
 	Convoy_01 setVariable ["debug", false];
 
-	call{ 0 = [Convoy_01, _convUnits] execVM "\nagas_Convoy\functions\fn_initConvoy.sqf" };
+	call{ 0 = [Convoy_01, _convVics] execVM "\nagas_Convoy\functions\fn_initConvoy.sqf" };
+
+	// Setup QRF
+	[_convUnits] spawn {
+		params ["_convUnits"];
+		
+		_callerUnit = objNull;
+
+		while { isNull _callerUnit } do {
+			
+			/*
+			{
+				_currUnit = _x;
+				_knownPlayer = 
+
+				if(allPlayers findIf { _currUnit knowsAbout _x >= 1.5 } != -1) then
+				{
+					_callerUnit = _currUnit;
+					break;
+				}
+			} forEach _convUnits;
+			*/
+			
+			sleep 1;
+		};
+
+		[(missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "QRF", position _callerUnit, []] execVM "globalScripts\Pie_Helper_QRF.sqf";
+	}
 };

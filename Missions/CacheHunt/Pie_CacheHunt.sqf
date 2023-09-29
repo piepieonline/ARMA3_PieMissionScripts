@@ -189,5 +189,7 @@ Pie_fnc_SendCacheQRF = {
 			_qrfWpt setWaypointSpeed "FULL";
 			break;
 		};
-	} forEach allGroups; 
+	} forEach allGroups;
+
+	[(missionNamespace getVariable "Pie_DynFac_SelectedFaction") get "QRF", missionNamespace getVariable "Pie_CachePosition", []] execVM "globalScripts\Pie_Helper_QRF.sqf";
 };
