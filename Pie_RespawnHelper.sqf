@@ -8,10 +8,15 @@ init.sqf:
 
 if(isServer) then
 {
+	params [["_moveRespawnMarker", true]];
+
 	// Move the marker to the first player's spawn location (otherwise it's always ASL, doesn't work with the carrier)
-	[] spawn {
-		waitUntil { time > 0 };
-		"respawn" setMarkerPos (allPlayers select 0);
+	if(_moveRespawnMarker) then
+	{
+		[] spawn {
+			waitUntil { time > 0 };
+			"respawn" setMarkerPos (allPlayers select 0);
+		};
 	};
 
 	// When someone respawns, put them in spectator mode
