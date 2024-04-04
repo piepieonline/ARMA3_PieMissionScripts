@@ -23,7 +23,7 @@ if(isServer) then
 		_supplySetup, ["Choose loadout", {
 			[] call Pie_fnc_DynPlayerFaction_ChooseLoadout;
 		},
-		nil, 1.5, true, true, "", "true", 5]
+		nil, 1.5, true, true, "", format ["missionNamespace getVariable ['Pie_Mis_SelectedPlayerFaction', ''] != ''"], 5]
 	] remoteExec ["addAction", 0, true];
 };
 
@@ -132,6 +132,14 @@ Pie_fnc_DynPlayerFaction_ChooseLoadout = {
 		if(_selection != "") then
 		{
 			player setUnitLoadout _selection;
+
+			// UK3CB don't actually add items, do that now
+			if (missionNamespace getVariable "Pie_Mis_SelectedPlayerFaction" find "UK3CB" == 0) then
+			{
+				// We can't use the actual function because it uses typeOf -.-
+				// [player] call UK3CB_factions_Common_fnc_unit_loadout;
+				[player, null, _selection] execVM "globalScripts\_ThirdParty\Pie_UK3CB_LoadoutAssigner.sqf";
+			};
 		};
 	}];
 
