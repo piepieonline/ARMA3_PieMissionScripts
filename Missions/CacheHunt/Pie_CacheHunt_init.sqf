@@ -8,7 +8,8 @@
 	["FIA", "CacheHunt\FIA", "IND_G_F"],
 	["European Locals", "CacheHunt\EuroLocals", "PIE_LocalEuro"],
 	["Russian (Heavy)", "CacheHunt\RussianHeavy", "CUP_O_RU"],
-	["Takistan Locals", "CacheHunt\TakiLocals", "CUP_I_TK_GUE"]
+	["Takistan Locals (CUP)", "CacheHunt\TakiLocals-CUP", "CUP_I_TK_GUE"],
+	["Takistan Locals (3CB)", "CacheHunt\TakiLocals-3CB", "UK3CB_TKM_I"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
 [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";

@@ -5,8 +5,9 @@
 [setupLaptop, [
 	["European Locals", "CSAR\EuroLocals", "PIE_LocalEuro"],
 	["FIA", "CSAR\FIA", "IND_G_F"],
-	["Russian (Heavy)", "CSAR\RussianHeavy", "CUP_O_RU"],
-	["Takistan Locals", "CSAR\TakiLocals", "CUP_I_TK_GUE"]
+	// ["Russian (Heavy)", "CSAR\RussianHeavy", "CUP_O_RU"],
+	// ["Takistan Locals (CUP)", "CSAR\TakiLocals-CUP", "CUP_I_TK_GUE"],
+	["Takistan Locals (3CB)", "CSAR\TakiLocals-3CB", "UK3CB_TKM_I"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
 [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
