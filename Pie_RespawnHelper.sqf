@@ -41,7 +41,7 @@ if(isServer) then
 
 Pie_fnc_DoRejoin = {
 	params ["_location"];
-	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
 		// Select the same respawn player for all respawners
 		// Use the admin by default
 		_respawnPlayer = player;
@@ -90,7 +90,7 @@ Pie_fnc_DoRejoin = {
 };
 
 Pie_fnc_SetRejoinVic = {
-	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
 		if(vehicle player != player) then
 		{
 			missionNamespace setVariable ["PieRespawn_RespawnVic", vehicle player, true];
@@ -100,7 +100,7 @@ Pie_fnc_SetRejoinVic = {
 };
 
 Pie_fnc_ClearRejoinVic = {
-	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
 		if(vehicle player != player) then
 		{
 			missionNamespace setVariable ["PieRespawn_RespawnVic", objNull, true];
@@ -114,13 +114,13 @@ Pie_fnc_SaveRespawnLoadout = {
 };
 
 Pie_fnc_SaveAllRespawnLoadouts = {
-	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
 		[] remoteExec ["Pie_fnc_SaveRespawnLoadout"];
 	};
 };
 
 Pie_fnc_ResetAllLoadouts = {
-	if (call BIS_fnc_admin != 0 || clientOwner == 2) then {
+	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
 		[{
 			_playerLoadout = localNamespace getVariable ["Pie_Respawn_Loadout", []];
 
