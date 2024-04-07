@@ -28,7 +28,7 @@ if(isServer) then
 };
 
 Pie_fnc_DynPlayerFaction_ChooseFaction = {
-	if (!isMultiplayer || call BIS_fnc_admin != 0 || clientOwner == 2) then {
+	if (!isMultiplayer || call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
 		_display = createDialog ["RscDisplayEmpty", true];
 
 		_instructionLabel = _display ctrlCreate ["RscText", -1];
