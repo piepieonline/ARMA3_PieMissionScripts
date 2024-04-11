@@ -52,7 +52,7 @@ if(isServer) then
 	// _nearbyLocations = nearestLocations [[worldSize / 2, worldsize / 2, 0], ["FlatAreaCity", "FlatAreaCitySmall"], worldsize];
 	// _nearbyLocations = nearestLocations [[worldSize / 2, worldsize / 2, 0], ["FlatArea", "FlatAreaCity", "FlatAreaCitySmall"], worldsize];
 	_nearbyLocations = nearestLocations [[worldSize / 2, worldsize / 2, 0], ["NameCity", "NameCityCapital", "NameVillage"], worldsize];
-	_randomLocation = (getPos selectRandom (nearestTerrainObjects [getPos selectRandom _nearbyLocations, ["ROAD", "MAIN ROAD", "TRACK"], 500])) findEmptyPosition [0, 100, _enemyAAVics select 0 select 1];
+	_randomLocation = (getPos selectRandom (nearestTerrainObjects [getPos selectRandom _nearbyLocations, ["ROAD", "MAIN ROAD", "TRACK"], 500, false, true])) findEmptyPosition [0, 100, _enemyAAVics select 0 select 1];
 
 	_spawnHeight = 100;
 	_offsetDistance = 750;
@@ -62,10 +62,10 @@ if(isServer) then
 	vicVic setDir _offsetAngle;
 	vicVic setPosATL [(_randomLocation select 0) + ((cos _offsetAngle) * _offsetDistance), (_randomLocation select 1) + (sin _offsetAngle * _offsetDistance), _spawnHeight];
 
-	_vicHoldWP = vicVicSquad addWaypoint [getPos vicVic, -1];
+	_vicHoldWP = vicVicSquad addWaypoint [getPosASL vicVic, -1];
 	_vicHoldWP setWaypointType "HOLD";
 
-	_vicMoveWP = vicVicSquad addWaypoint [[(_randomLocation select 0) + (cos _oppOffsetAngle * _offsetDistance), (_randomLocation select 1) + (sin _oppOffsetAngle * _offsetDistance), _spawnHeight], -1];
+	_vicMoveWP = vicVicSquad addWaypoint [[(_randomLocation select 0) + (cos _oppOffsetAngle * _offsetDistance), (_randomLocation select 1) + (sin _oppOffsetAngle * _offsetDistance), _spawnHeight], getPosASL vicVic select 2];
 
 	_murderVicLocation = [_randomLocation select 0, _randomLocation select 1, 2]; 
 
@@ -90,7 +90,7 @@ if(isServer) then
 
 	{
 		_groupNumber = 0;
-		_infSpawnLocations = nearestTerrainObjects [getPos _x, ["BUILDING", "HOUSE", "CHAPEL", "CHURCH", "HOSPITAL", "FUELSTATION"], 500];
+		_infSpawnLocations = nearestTerrainObjects [getPos _x, ["BUILDING", "HOUSE", "CHAPEL", "CHURCH", "HOSPITAL", "FUELSTATION"], 500, false, true];
 		{
 			if ((_x select 0) >= random 100) then
 			{
@@ -114,7 +114,7 @@ if(isServer) then
 					_wp = nil;
 
 					{
-						_wp = _newGroup addWaypoint [[(_spawnPosInf select 0) + (cos _x * 80), (_spawnPosInf select 1) + (sin _x * 80), 0], -1];
+						_wp = _newGroup addWaypoint [[(_spawnPosInf select 0) + (cos _x * 80), (_spawnPosInf select 1) + (sin _x * 80), 0], 0];
 						_wp setWaypointBehaviour "SAFE";
 					} forEach [0, 90, 180, 270];
 
