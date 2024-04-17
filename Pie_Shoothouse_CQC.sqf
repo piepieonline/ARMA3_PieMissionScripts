@@ -1,6 +1,9 @@
 if(isServer) then
 {
 	params ["_setupLaptop"];
+
+	missionNamespace setVariable ["Pie_Shoothouse_BaseLocation", getPos _setupLaptop, true];
+
 	[
 		_setupLaptop, ["Start CQC", {
 			[] call Pie_fnc_Shoothouse_StartShoothouseDialog;
@@ -12,7 +15,14 @@ if(isServer) then
 		_setupLaptop, ["Join CQC", {
 			[player] call Pie_fnc_Shoothouse_JoinShoothouse;
 		},
-		nil, 1.5, true, true, "", "true", 5]
+		nil, 1.5, true, true, "", "((missionNamespace getVariable ['Pie_Shoothouse_Players', []]) find player) == -1", 5]
+	] remoteExec ["addAction", 0, true];
+
+	[
+		_setupLaptop, ["Leave CQC", {
+			[player, false] call Pie_fnc_Shoothouse_LeaveShoothouse;
+		},
+		nil, 1.5, true, true, "", "((missionNamespace getVariable ['Pie_Shoothouse_Players', []]) find player) != -1", 5]
 	] remoteExec ["addAction", 0, true];
 
 	[
@@ -48,7 +58,7 @@ Pie_fnc_Shoothouse_StartShoothouseDialog = {
 	_locationDropdown ctrlAddEventHandler ["LBSelChanged",
 	{
 		params ["_control", "_selectedIndex"];
-		missionNamespace setVariable ['Pie_Shoothouse_SelectedLocation', (missionNamespace getVariable ['Pie_Shoothouse_LocationList', []]) select _selectedIndex];
+		missionNamespace setVariable ['Pie_Shoothouse_SelectedLocation', (missionNamespace getVariable ['Pie_Shoothouse_LocationList', []]) select _selectedIndex, true];
 	}];
 
 	// Faction dropdown
@@ -112,6 +122,22 @@ Pie_fnc_Shoothouse_StartShoothouseDialog = {
 		missionNamespace setVariable ['Pie_Shoothouse_NumOpforGroups', parseNumber (_control lbData (lbCurSel _control)), true];
 	}];
 
+	// Locked door percentage
+	_lockedDoorPercentageDropdown = _display ctrlCreate ["RscCombo", 105];
+	_lockedDoorPercentageDropdown ctrlSetPosition [0, 0.40, 1, 0.04];
+	_lockedDoorPercentageDropdown ctrlCommit 0;
+
+	{
+		_item = _lockedDoorPercentageDropdown lbAdd format ["%1", str _x];
+		_lockedDoorPercentageDropdown lbSetData [_item, str _x];
+	} forEach [0, 25, 50, 75, 100];
+
+	_lockedDoorPercentageDropdown ctrlAddEventHandler ["LBSelChanged",
+	{
+		params ["_control", "_selectedIndex"];
+		missionNamespace setVariable ['Pie_Shoothouse_LockedDoorPercentage', parseNumber (_control lbData (lbCurSel _control)), true];
+	}];
+
 	_shoothouseStartButton = _display ctrlCreate ["RscButton", 103];
 	_shoothouseStartButton ctrlSetPosition [0, 0.5, 0.35, 0.04];
 	_shoothouseStartButton ctrlCommit 0;
@@ -122,13 +148,16 @@ Pie_fnc_Shoothouse_StartShoothouseDialog = {
 		_selectedLocation = missionNamespace getVariable ["Pie_Shoothouse_SelectedLocation", null];
 		_selectedOpfor = missionNamespace getVariable ["Pie_Shoothouse_SelectedOpfor", ""];
 		_selectedOpforCount = missionNamespace getVariable ["Pie_Shoothouse_NumOpforGroups", -1];
-		if(!(isNull _selectedLocation) &&  _selectedOpfor != "" && _selectedOpforCount > 0) then
+		_selectedOpforCount = missionNamespace getVariable ["Pie_Shoothouse_NumOpforGroups", -1];
+		_lockedDoorPercentage = missionNamespace getVariable ["Pie_Shoothouse_LockedDoorPercentage", -1];
+		if(!(isNull _selectedLocation) &&  _selectedOpfor != "" && _selectedOpforCount > 0 && _lockedDoorPercentage >= 0) then
 		{
 			closeDialog 1;
 			[
 				_selectedLocation,
 				_selectedOpfor,
-				_selectedOpforCount
+				_selectedOpforCount,
+				_lockedDoorPercentage
 			] spawn Pie_fnc_Shoothouse_BuildShoothouse;
 		};
 	}];
@@ -144,13 +173,15 @@ Pie_fnc_Shoothouse_StartShoothouseDialog = {
 };
 
 Pie_fnc_Shoothouse_BuildShoothouse = {
-	params ["_selectedLocation", "_selectedOpfor", "_opforGroupCount"];
+	params ["_selectedLocation", "_selectedOpfor", "_opforGroupCount", "_lockedDoorPercentage"];
 	[format ["Starting CQC at %1 against %3 groups of %2", text _selectedLocation, getText (configFile >> "cfgFactionClasses" >> _selectedOpfor >> "displayName"), str _opforGroupCount]] remoteExec ['systemChat'];
 
 	missionNamespace setVariable ['Pie_Shoothouse_InProgress', true, true];
 
-	_infSpawnLocations = nearestTerrainObjects [getPos _selectedLocation, ["BUILDING", "HOUSE", "HOSPITAL", "FUELSTATION"], (size _selectedLocation select 0) max (size _selectedLocation select 1), false, true];
-	_sortedInfSpawnLocations = nearestTerrainObjects [getPos selectRandom _infSpawnLocations, ["BUILDING", "HOUSE", "HOSPITAL", "FUELSTATION"], (size _selectedLocation select 0) max (size _selectedLocation select 1), true, true];
+	_excludedBuildingClassNames = ["Land_Shed_Small_F", "Land_Shed_Big_F", "Land_Metal_Shed_F", "Land_Goal_F", "Land_RugbyGoal_01_F"];
+
+	_infSpawnLocations = (nearestTerrainObjects [getPos _selectedLocation, ["HOUSE", "HOSPITAL", "FUELSTATION"], 200, false, true]) select { (_excludedBuildingClassNames find (typeOf _x)) == -1 };
+	_sortedInfSpawnLocations = (nearestTerrainObjects [getPos selectRandom _infSpawnLocations, ["HOUSE", "HOSPITAL", "FUELSTATION"], worldSize, true, true]) select { (_excludedBuildingClassNames find (typeOf _x)) == -1 };;
 
 	// Select valid groups to spawn
 	_validGroups = [];
@@ -169,6 +200,10 @@ Pie_fnc_Shoothouse_BuildShoothouse = {
 	while {_spawnedGroups < _numGroups} do {
 		// Location to spawn
 		_botSpawnLocation = _sortedInfSpawnLocations deleteAt 0;
+
+		while {count ([_botSpawnLocation] call BIS_fnc_buildingPositions) == 0} do {
+			_botSpawnLocation = _sortedInfSpawnLocations deleteAt 0;
+		};
 
 		// Delete a few more closest, so that there's a little more spacing
 		_sortedInfSpawnLocations deleteAt 0;
@@ -228,13 +263,24 @@ Pie_fnc_Shoothouse_BuildShoothouse = {
 	}
 	forEach _sortedInfSpawnLocations;
 
-	_playerSpawnSpots = [_playerSpawnLocation] call BIS_fnc_buildingPositions;;
+	_playerSpawnSpots = [_playerSpawnLocation] call BIS_fnc_buildingPositions;
 	if(count _playerSpawnSpots == 0) then
 	{
 		missionNamespace setVariable ['Pie_Shoothouse_PlayerSpawnLocations', [getPos _playerSpawnLocation], true];
 	} else {
 		missionNamespace setVariable ['Pie_Shoothouse_PlayerSpawnLocations', _playerSpawnSpots, true];
 	};
+
+	// Lock some doors in town - TODO: Optional percentage locked
+	_lockedBuildings = [];
+	{
+		if (random 100 < _lockedDoorPercentage) then {
+			[_x, true] call Pie_fnc_Shoothouse_ChangeDoorState;
+			_lockedBuildings pushBack _x;
+		};
+	}
+	forEach nearestTerrainObjects [_firstGroupSpawnLocation, ["BUILDING", "HOUSE", "HOSPITAL", "FUELSTATION"], _maxDistance, false, true];
+	missionNamespace setVariable ['Pie_Shoothouse_LockedBuildings', _lockedBuildings, true];
 
 	// Create the marker
 	_areamarkerstr = createMarker ["Pie_Shoothouse_AreaMarker", _firstGroupSpawnLocation];
@@ -247,6 +293,20 @@ Pie_fnc_Shoothouse_BuildShoothouse = {
 	_dotmarkerstr = createMarker ["Pie_Shoothouse_TextMarker", [_firstGroupSpawnLocation select 0, (_firstGroupSpawnLocation select 1) + (_maxDistance * 1.5), 0]];
 	_dotmarkerstr setMarkerType "mil_start";
 	_dotmarkerstr setMarkerText "CQC Location";
+	
+	// Create the return/end flagpole
+	//_flagpole = createVehicle ["FlagCarrierBLUFOR_EP1", (nearestTerrainObjects [(missionNamespace getVariable ['Pie_Shoothouse_PlayerSpawnLocations', []]) select 0, ["ROAD", "MAIN ROAD", "TRACK"], 500, true, true]) select 0];
+	_flagpole = createVehicle ["FlagCarrierBLUFOR_EP1", ((missionNamespace getVariable ['Pie_Shoothouse_PlayerSpawnLocations', []]) select 0) findEmptyPosition [1, 200]];
+	[
+		_flagpole, ["Return to base", {
+			[player, true] call Pie_fnc_Shoothouse_LeaveShoothouse;
+		},
+		nil, 1.5, true, true, "", "true", 5]
+	] remoteExec ["addAction", 0, true];
+
+	missionNamespace setVariable ['Pie_Shoothouse_Flagpole', _flagpole, true];
+
+	[format ["CQC at %1 is ready", text _selectedLocation]] remoteExec ['systemChat'];
 
 	// Join pending players
 	{
@@ -288,12 +348,51 @@ Pie_fnc_Shoothouse_EndShoothouse = {
 	}
 	forEach _unitsAtStart;
 
+	{
+		[_x, true] call Pie_fnc_Shoothouse_LeaveShoothouse;
+	}
+	forEach (missionNamespace getVariable ["Pie_Shoothouse_Players", []]);
+
 	missionNamespace setVariable ['Pie_Shoothouse_InProgress', false, true];
 	missionNamespace setVariable ["Pie_Shoothouse_Players", [], true];
 	missionNamespace setVariable ["Pie_Shoothouse_SelectedIndex", -1, true];
 	missionNamespace setVariable ["Pie_Shoothouse_SelectedOpfor", "", true];
 	missionNamespace setVariable ["Pie_Shoothouse_NumOpforGroups", -1, true];
 	missionNamespace setVariable ["Pie_Shoothouse_SpawnedEnemyUnits", [], true];
+
+	{
+		[_x, false] call Pie_fnc_Shoothouse_ChangeDoorState;
+	}
+	forEach (missionNamespace getVariable ['Pie_Shoothouse_LockedBuildings', []]);
+	missionNamespace setVariable ['Pie_Shoothouse_LockedBuildings', [], true];
+
+	deleteVehicle (missionNamespace getVariable ['Pie_Shoothouse_Flagpole', objNull]);
+	missionNamespace setVariable ['Pie_Shoothouse_Flagpole', objNull, true];
+
 	deleteMarker "Pie_Shoothouse_AreaMarker";
 	deleteMarker "Pie_Shoothouse_TextMarker";
+};
+
+Pie_fnc_Shoothouse_ChangeDoorState = {
+	params ["_building", "_locked"];
+	_class = configFile >> "CfgVehicles" >> typeOf _building;
+	_numDoors = getNumber (_class >> "numberofdoors");
+
+	for "_i" from 1 to _numDoors do {
+		_building animate[format ["Door_%1_rot", _i], 0];
+		_building setVariable[format ["bis_disabled_Door_%1", _i], if(_locked) then [{1}, {0}], true];
+	};
+};
+
+Pie_fnc_Shoothouse_LeaveShoothouse = {
+	params ["_player", "_teleport"];
+
+	if(_teleport) then
+	{
+		_player setPos ((missionNamespace getVariable ["Pie_Shoothouse_BaseLocation", []]) findEmptyPosition [0, 200]);
+	};
+
+	_shoothousePlayers = missionNamespace getVariable ["Pie_Shoothouse_Players", []];
+	_shoothousePlayers deleteAt (_shoothousePlayers find _player);
+	missionNamespace setVariable ["Pie_Shoothouse_Players", _shoothousePlayers, true];
 };
