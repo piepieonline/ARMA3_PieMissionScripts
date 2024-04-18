@@ -11,21 +11,24 @@ _unitToControl = _this param [1, objNull];
 _condition = _this param [2, "true"]; // _target, _this, _originalTarget
 _label = _this param [3, "Take Control"];
 
-[
-	_objectToAdd, [
-	_label,
-	{
-		params ["_target", "_caller", "_actionId", "_arguments"];
-		[_target, _caller, _actionId, _arguments] call Pie_RemoteControl_TakeControl;
-	},
-	[_unitToControl],
-	1.5,
-	true,
-	true,
-	"",
-	_condition, 
-	3
-]] remoteExec ["addAction", 0, true];
+if(isServer) then
+{
+	[
+		_objectToAdd, [
+		_label,
+		{
+			params ["_target", "_caller", "_actionId", "_arguments"];
+			[_target, _caller, _actionId, _arguments] call Pie_RemoteControl_TakeControl;
+		},
+		[_unitToControl],
+		1.5,
+		true,
+		true,
+		"",
+		_condition, 
+		3
+	]] remoteExec ["addAction", 0, true];
+};
 
 Pie_RemoteControl_TakeControl = {
 	params ["_target", "_caller", "_actionId", "_arguments"];
