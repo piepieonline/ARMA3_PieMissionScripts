@@ -23,19 +23,22 @@ if(isServer) then
 	addMissionEventHandler ["EntityRespawned", {
 		params ["_newEntity", "_oldEntity"];
 
-		[{
-			_playerLoadout = localNamespace getVariable ["Pie_Respawn_Loadout", []];
+		if(isPlayer _newEntity) then
+		{
+			[{
+				_playerLoadout = localNamespace getVariable ["Pie_Respawn_Loadout", []];
 
-			if(count _playerLoadout > 0) then
-			{
-				player setUnitLoadout _playerLoadout;
-			};
+				if(count _playerLoadout > 0) then
+				{
+					player setUnitLoadout _playerLoadout;
+				};
 
-			[] call ace_spectator_fnc_setSpectator;
-			[(allPlayers - [player])] call ace_spectator_fnc_updateUnits;
-			[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
-			[[-2, -1], [0, 1, 2]] call ace_spectator_fnc_updateVisionModes;
-		}] remoteExec ["call", owner _newEntity];
+				[] call ace_spectator_fnc_setSpectator;
+				[(allPlayers - [player])] call ace_spectator_fnc_updateUnits;
+				[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
+				[[-2, -1], [0, 1, 2]] call ace_spectator_fnc_updateVisionModes;
+			}] remoteExec ["call", owner _newEntity];
+		};
 	}];
 };
 
