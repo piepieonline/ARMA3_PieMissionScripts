@@ -107,7 +107,7 @@ if(isServer) then
 
 				if(_garrison) then
 				{
-					[_newGroup] call lambs_wp_fnc_taskGarrison;
+					[_newGroup, _newGroup, 50, [], true, false, -1, false] call lambs_wp_fnc_taskGarrison;
 				}
 				else
 				{
