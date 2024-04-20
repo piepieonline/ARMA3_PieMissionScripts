@@ -38,7 +38,7 @@ _parameters = [
 		"vn_c_men_32"
 	]],
 	["UNITS_PER_BUILDING", 1.1],
-	["MAX_GROUPS_COUNT", 5],
+	["MAX_GROUPS_COUNT", 10],
 	["MIN_SPAWN_DISTANCE", 100],
 	["MAX_SPAWN_DISTANCE", 400],
 	["BLACKLIST_MARKERS", [
@@ -50,7 +50,12 @@ _parameters = [
 		"civi_blacklist_6"
 	]],
 	["HIDE_BLACKLIST_MARKERS", true],
-	["ON_UNIT_SPAWNED_CALLBACK", {}],
+	["ON_UNIT_SPAWNED_CALLBACK", {
+		_civiUnit = _this select 0;
+		_civiUnit addEventHandler ["Killed", {
+			missionNamespace setVariable ["Pie_NamPatrol_CiviDeathCount", (missionNamespace getVariable ["Pie_NamPatrol_CiviDeathCount", 0]) + 1, true];
+		}];
+	}],
 	["ON_UNIT_REMOVE_CALLBACK", { true }],
 	["DEBUG", false]	//false true
 ];

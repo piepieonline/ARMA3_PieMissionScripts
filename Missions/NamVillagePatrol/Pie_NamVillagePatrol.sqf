@@ -145,7 +145,21 @@ Pie_fnc_NamPatrol_StartPatrol = {
         "Land_vn_hut_village_02"
     ];
 
+    _mineTypes = [
+        // Not instant uncon, legs
+        "vn_mine_punji_02",
+        "vn_mine_punji_05"
+        // Instant uncon, legs and chest
+        // "vn_mine_punji_01",
+        // "vn_mine_punji_03",
+    ];
+
+    // Instant uncon, head and chest
+    _doorwayMineType = "vn_mine_punji_04";
+
     _spawnedUnits = [];
+
+    missionNamespace setVariable ["Pie_NamPatrol_CiviDeathCount", 0, true];
 
     if(_debugMode) then { 
         [format ["Accounting for %1 players", _playerCount]] remoteExec ["systemChat"];
@@ -181,13 +195,17 @@ Pie_fnc_NamPatrol_StartPatrol = {
 
                 if(!_townHasCache && random 1 < 0.3) then
                 {
+                    // Create the weapons cache objective
                     _objective = createVehicle [_cacheObject, _objectivePos];
                     _townHasCache = true;
                     _spawnedUnits pushBack _objective;
-                    [format ["Spawned %1 in %2", _cacheObject, text _currentTown]] remoteExec ["systemChat"];
+                    if(_debugMode) then { 
+                        [format ["Spawned %1 in %2", _cacheObject, text _currentTown]] remoteExec ["systemChat"];
+                    };
                 }
                 else
                 {
+                    // Create the table and document objective
                     _table = createVehicle ["Land_vn_us_common_table_01", _objectivePos];
                     _objective = createVehicle [_intelObject, [_objectivePos select 0, _objectivePos select 1, ((getPos _table) select 2) + 3]];
                     [
@@ -209,7 +227,9 @@ Pie_fnc_NamPatrol_StartPatrol = {
                     ] remoteExec ["BIS_fnc_holdActionAdd", 0, _objective];
                     _spawnedUnits pushBack _table;
                     _spawnedUnits pushBack _objective;
-                    [format ["Spawned %1 in %2", _intelObject, text _currentTown]] remoteExec ["systemChat"];
+                    if(_debugMode) then {
+                        [format ["Spawned %1 in %2", _intelObject, text _currentTown]] remoteExec ["systemChat"];
+                    };
                 };
 
                 _objectivesToSpawn = _objectivesToSpawn - 1;
@@ -292,7 +312,7 @@ Pie_fnc_NamPatrol_EndPatrol = {
         if(_x isKindOf "Man" && alive _x) then {
             _aliveCount = _aliveCount + 1;
         };
-        if(typeof _x == "Land_vn_pavn_weapons_stack1") then {
+        if(typeof _x == "Land_vn_pavn_weapons_stack1" && alive _x) then {
             _cacheAliveCount = _cacheAliveCount + 1;
         };
         if(typeof _x == "Land_Map_F") then {
@@ -302,7 +322,7 @@ Pie_fnc_NamPatrol_EndPatrol = {
 	}
 	forEach _units;
 
-    [[west, "Base"], format ["Patrol completed. Intel reports that %1 VC, %2 caches and %3 documents were missed.", str _aliveCount, str _cacheAliveCount, str _intelAliveCount]] remoteExec ["commandChat"];
+    [[west, "Base"], format ["Patrol completed. Intel reports that %1 VC, %2 caches and %3 documents were missed. %4 civilians were killed.", str _aliveCount, str _cacheAliveCount, str _intelAliveCount, str (missionNamespace getVariable ["Pie_NamPatrol_CiviDeathCount", 0])]] remoteExec ["commandChat"];
 
     missionNamespace setVariable ["Pie_NamPatrol_Markers", [], true];
     missionNamespace setVariable ["Pie_NamPatrol_Towns", [], true];
