@@ -17,6 +17,8 @@ call compile preprocessFileLineNumbers "globalScripts\Missions\NamVillagePatrol\
 Pie_Helper_RemoteControl = compileFinal preprocessFileLineNumbers "globalScripts\Pie_Helper_RemoteControl.sqf";
 [false] execVM "globalScripts\Pie_RespawnHelper.sqf";
 
+debugMode = false;
+
 if(isServer) then
 {
     [
@@ -107,7 +109,6 @@ Pie_fnc_NamPatrol_RedrawMarkers = {
 };
 
 Pie_fnc_NamPatrol_StartPatrol = {
-    _debugMode = false;
     _towns = missionNamespace getVariable ["Pie_NamPatrol_Towns", []];
     _playerCount = count allPlayers;
     _moduleGroup = createGroup sideLogic;
@@ -157,11 +158,16 @@ Pie_fnc_NamPatrol_StartPatrol = {
     // Instant uncon, head and chest
     _doorwayMineType = "vn_mine_punji_04";
 
+    _campFireObjects = [
+        "Land_vn_c_prop_pot_fire_01",
+        "vn_fireplace_burning_f"
+    ];
+
     _spawnedUnits = [];
 
     missionNamespace setVariable ["Pie_NamPatrol_CiviDeathCount", 0, true];
 
-    if(_debugMode) then { 
+    if(debugMode) then { 
         [format ["Accounting for %1 players", _playerCount]] remoteExec ["systemChat"];
     };
 
@@ -185,9 +191,10 @@ Pie_fnc_NamPatrol_StartPatrol = {
         };
 
         _objectivesToSpawn = [_minimumObjectivesPerTown, _maximumObjectivesPerTown] call BIS_fnc_randomInt;
-        if(_debugMode) then { 
+        if(debugMode) then { 
             [format ["Spawning %1 objectives in %2", _objectivesToSpawn, text _currentTown]] remoteExec ["systemChat"];
         };
+
         {
             if(_objectivesToSpawn > 0 && _possibleObjectiveHouses find (typeOf _x) != -1) then
             {
@@ -199,7 +206,7 @@ Pie_fnc_NamPatrol_StartPatrol = {
                     _objective = createVehicle [_cacheObject, _objectivePos];
                     _townHasCache = true;
                     _spawnedUnits pushBack _objective;
-                    if(_debugMode) then { 
+                    if(debugMode) then { 
                         [format ["Spawned %1 in %2", _cacheObject, text _currentTown]] remoteExec ["systemChat"];
                     };
                 }
@@ -227,7 +234,7 @@ Pie_fnc_NamPatrol_StartPatrol = {
                     ] remoteExec ["BIS_fnc_holdActionAdd", 0, _objective];
                     _spawnedUnits pushBack _table;
                     _spawnedUnits pushBack _objective;
-                    if(_debugMode) then {
+                    if(debugMode) then {
                         [format ["Spawned %1 in %2", _intelObject, text _currentTown]] remoteExec ["systemChat"];
                     };
                 };
@@ -250,40 +257,48 @@ Pie_fnc_NamPatrol_StartPatrol = {
 
         // Spawn hostiles in town
         _groupsToSpawn = [_minimumPatrolsPerTown, _maximumPatrolsPerTown] call BIS_fnc_randomInt;
-        if(_debugMode) then { 
+        if(debugMode) then { 
             [format ["Spawning %1 groups in %2", _groupsToSpawn, text _currentTown]] remoteExec ["systemChat"];
         };
         for "_i" from 1 to (_groupsToSpawn) do
         {
             _hostileTownGroup = [_currentTownPosition, east, selectRandom _possibleCampGroups] call BIS_fnc_spawnGroup;
             _hostileTownGroup deleteGroupWhenEmpty true;
+            _hostileTownGroup setGroupIdGlobal [format ["%1 - Town: %2", str(count groups east), text _currentTown]];
             _spawnedUnits append units _hostileTownGroup;
-            if(_i == 1) then 
+            if(_i == 1) then
             {
                 [_hostileTownGroup, _currentTownPosition, 150, [100, 100, 0, false], true, false, -2, true] call lambs_wp_fnc_taskGarrison;
             }
             else
             {
                 [_hostileTownGroup, _currentTownPosition, 200, [], true, true] call lambs_wp_fnc_taskCamp;
+                _spawnedUnits pushBack createVehicle [selectRandom _campFireObjects, [_currentTownPosition select 0, _currentTownPosition select 1, 0]];
             };
         };
 
         // Spawn patrolling hostiles
-        if(_spawnPatrolsBetween && _forEachIndex > 0) then
+        if(_spawnPatrolsBetween && (count _towns) > 1) then
         {
-            if(_debugMode) then { 
-                [format ["Spawning a patrol group in %1", text _currentTown]] remoteExec ["systemChat"];
+            if(_forEachIndex > 0) then
+            {
+                _spawnedUnits append (units ([[_towns select (_forEachIndex - 1), _towns select (_forEachIndex)], selectRandom _possiblePatrolGroups] call Pie_fnc_NamPatrol_SpawnWanderingPatrol));
             };
 
-            _hostileTownGroup = [_currentTownPosition, east, selectRandom _possiblePatrolGroups] call BIS_fnc_spawnGroup;
-            _hostileTownGroup deleteGroupWhenEmpty true;
-            _spawnedUnits append units _hostileTownGroup;
+            if(_forEachIndex < (count _towns) - 1) then
+            {
+                _spawnedUnits append (units ([[_towns select (_forEachIndex + 1), _towns select (_forEachIndex)], selectRandom _possiblePatrolGroups] call Pie_fnc_NamPatrol_SpawnWanderingPatrol));
+            };
+        };
 
-            _hostileTownGroup setSpeedMode "LIMITED";
-            _hostileTownGroup setBehaviour "SAFE";
-
-            _hostileTownGroup addWaypoint [(getPos (_towns select (_forEachIndex - 1))), 0];
-            (_hostileTownGroup addWaypoint [_currentTownPosition, 0]) setWaypointType "CYCLE";
+        // Spawn mines
+        _mineSpawnRate = ["punjiTraps", 0.5] call BIS_fnc_getParamValue;
+        if(_mineSpawnRate > 0 && (count _towns) > 1 && _forEachIndex > 0) then
+        {
+            if(random 1 < _mineSpawnRate) then
+            {
+                [_towns select (_forEachIndex - 1), _x] call Pie_fnc_NamPatrol_Minefield;
+            };
         };
     } forEach _towns;
 
@@ -293,6 +308,102 @@ Pie_fnc_NamPatrol_StartPatrol = {
     missionNamespace setVariable ['Pie_NamPatrol_SpawnedUnits', _spawnedUnits, true];
 
     [[west, "Base"], format ["Priority assignment: Patrol through %1 and RTB.", _towns apply { text _x  } joinString ", "]] remoteExec ["commandChat"];
+};
+
+Pie_fnc_NamPatrol_SpawnWanderingPatrol = {
+    params ["_wanderingTowns", "_patrolGroupClass"];
+    private ["_firstTownPosition", "_hostileTownGroup", "_patrolRouteText"];
+
+    _patrolRouteText = _wanderingTowns apply { text _x } joinString ", ";
+
+     if(debugMode) then { 
+        [format ["Spawning a patrol group between %1", _patrolRouteText]] remoteExec ["systemChat"];
+    };
+
+    _firstTownPosition = getPos (_wanderingTowns select 0);
+
+    _hostileTownGroup = [_firstTownPosition, east, _patrolGroupClass] call BIS_fnc_spawnGroup;
+    _hostileTownGroup deleteGroupWhenEmpty true;
+    _hostileTownGroup setGroupIdGlobal [format ["%1 - Patrol: %2", str (count groups east), _patrolRouteText]];
+
+    _hostileTownGroup setSpeedMode "LIMITED";
+    _hostileTownGroup setBehaviour "SAFE";
+
+    {
+        _hostileTownGroup addWaypoint [(getPos _x), 0];
+    } forEach (_wanderingTowns select [1]);
+
+    (_hostileTownGroup addWaypoint [_firstTownPosition, 0]) setWaypointType "CYCLE";
+
+    _hostileTownGroup
+};
+
+Pie_fnc_NamPatrol_Minefield = {
+    params ["_town1", "_town2"];
+    private ["_mineClassNames", "_mines", "_timeout"];
+
+    _mineClassNames = ["vn_mine_punji_05"];
+    _minDistance = 4;
+    _amount = ["punjiTrapDensity", 100] call BIS_fnc_getParamValue;
+    _mines = [];
+
+    // Find minefield position
+    _pos1 = getpos _town1;
+    _pos2 = getpos _town2;
+
+    _depth = 50;
+    _width = 300;
+
+    _angle = ((_pos1 getDir _pos2) + 90);
+    _distance =  _pos1 distance2D _pos2;
+    _distanceAway = random [_depth, _distance / 2, _distance - _depth];
+    _center = _pos1 getPos [_distanceAway, (_pos1 getDir _pos2)];
+
+    _placementRect = [_center, [_depth, _width, _angle, true]];
+
+    if(debugMode) then
+    {
+        _marker = createMarker [format["minemarker %1 %2", str _pos1, str _pos2], _center];
+        _marker setMarkerShape "RECTANGLE";
+        _marker setMarkerColor "ColorRed";
+        _marker setMarkerSize [_depth, _width];
+        _marker setMarkerDir _angle;
+    };
+
+    _timeout = 0;
+    while {count _mines < _amount} do
+    {
+        // Get a random position in the area
+        private _pos = _placementRect call BIS_fnc_randomPosTrigger;
+
+        // Check the position is not too close to any other mines and not too steep
+        scopeName "closeCheck";
+
+        private _validMinePlacement = (count (_pos isFlatEmpty [-1, -1, 0.1]) > 0);
+        if(_validMinePlacement) then
+        {
+            {
+                if (_pos distance _x < _minDistance) exitWith
+                {
+                    _validMinePlacement = true;
+                };
+            } forEach _mines;
+        };
+
+        if (!_validMinePlacement) then
+        {
+            private _mine = createMine [selectRandom _mineClassNames, _pos, [], 0];
+            east revealMine _mine;
+            _mines pushBack _mine;
+        };
+
+        // Increment the timeout
+        _timeout = _timeout + 1;
+
+        // If the timeout is reached, break out of the loop
+        if (_timeout > _amount*2) exitWith {false};
+    };
+
 };
 
 Pie_fnc_NamPatrol_EndPatrol = {
