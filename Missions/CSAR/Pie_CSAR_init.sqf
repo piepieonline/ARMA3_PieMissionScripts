@@ -11,6 +11,7 @@
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
 [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+[] call Pie_fnc_WatchAllVehicleGunners;
 
 if(isServer) then
 {
