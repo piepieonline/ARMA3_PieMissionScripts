@@ -1,26 +1,36 @@
-Pie_fnc_WatchSpecificVehicle = {
-	params ["_vicToWatch", ["_allowDriveAway", true], ["_allowDriverIntoGun", true]];
+Pie_fnc_WatchSpecificVehicles = {
+	params ["_vicsToWatch", ["_allowDriveAway", true], ["_allowDriverIntoGun", true]];
 	if(isServer) then
 	{
-		[_vicToWatch, _allowDriveAway, _allowDriverIntoGun] spawn {
-			params ["_vicToWatch", "_allowDriveAway", "_allowDriverIntoGun"];
-			while { alive _vicToWatch } do
+		[_vicsToWatch, _allowDriveAway, _allowDriverIntoGun] spawn {
+			params ["_vicsToWatch", "_allowDriveAway", "_allowDriverIntoGun"];
 			{
-				_driver = driver _vicToWatch;
-				_gunner = gunner _vicToWatch;
-
-				_alreadyReacting = _vicToWatch getVariable ["Pie_GunnerReplacement_IsReacting", false];
-
-				if(!_alreadyReacting) then
+				_x lock true;
+			}
+			forEach _vicsToWatch;
+			
+			while { true } do
+			{
 				{
-					_unconscious = _gunner getVariable ["ACE_isUnconscious", false];
-					if(!alive _gunner || _unconscious) then
+					if(alive _x) then 
 					{
-						[_vicToWatch, _driver, _gunner, _allowDriveAway, _allowDriverIntoGun] call Pie_fnc_DriverReactToLostGunner;
-					};
-				};
+						_driver = driver _x;
+						_gunner = gunner _x;
 
-				sleep 5;
+						_alreadyReacting = _x getVariable ["Pie_GunnerReplacement_IsReacting", false];
+
+						if(!_alreadyReacting) then
+						{
+							_unconscious = _gunner getVariable ["ACE_isUnconscious", false];
+							if(!alive _gunner || _unconscious) then
+							{
+								[_x, _driver, _gunner, _allowDriveAway, _allowDriverIntoGun] call Pie_fnc_DriverReactToLostGunner;
+							};
+						};
+					};
+					sleep 1;
+				}
+				forEach _vicsToWatch;
 			};
 		};
 	};
@@ -71,10 +81,18 @@ Pie_fnc_DriverReactToLostGunner = {
 			_vic setVariable ["Pie_GunnerReplacement_LastPosition", position _vic];
 
 			// TODO: Only if the same squad
-			private _vicCargo = fullCrew [_vic, "cargo"];
+			private _vicCargo = fullCrew [_vic, "cargo"] + fullCrew [_vic, "turret"];
+
 			if(count _vicCargo > 0) then
 			{
-				[_vic, _vicCargo select 0 select 0, _gunner] call Pie_fnc_DriverReactToLostGunner_Swap;
+				{
+					_unitToCheckGun = _x select 0;
+					if(alive _unitToCheckGun && (!(_unitToCheckGun getVariable ["ACE_isUnconscious", false]))) then
+					{
+						[_vic, _unitToCheckGun, _gunner, true] call Pie_fnc_DriverReactToLostGunner_Swap;
+						break;
+					};
+				} forEach _vicCargo;
 			}
 			else
 			{
@@ -86,31 +104,38 @@ Pie_fnc_DriverReactToLostGunner = {
 				{
 					if(_allowDriverIntoGun) then
 					{
-						[_vic, _driver, _gunner] call Pie_fnc_DriverReactToLostGunner_Swap;
+						[_vic, _driver, _gunner, false] call Pie_fnc_DriverReactToLostGunner_Swap;
 					};
 				};
 			};
-
-		}
+		};
 	};
 };
 
 Pie_fnc_DriverReactToLostGunner_Swap = {
-	params ["_vic", "_aliveUnit", "_deadUnit"];
+	params ["_vic", "_aliveUnit", "_deadUnit", "_moveIntoCargo"];
 
 	if(isServer) then
 	{
-		[_vic, _aliveUnit, _deadUnit] spawn {
-			params ["_vic", "_aliveUnit", "_deadUnit"];
-			moveOut _deadUnit;
+		[_vic, _aliveUnit, _deadUnit, _moveIntoCargo] spawn {
+			params ["_vic", "_aliveUnit", "_deadUnit", "_moveIntoCargo"];
 
 			sleep (random [2, 6, 4]);
 
-			_aliveUnit assignAsGunner _vic;
+			moveOut _deadUnit;
+			
+			waitUntil { (isNull gunner _vic) };
+
+			sleep 0.1;
+
+			// _aliveUnit assignAsGunner _vic;
 			moveOut _aliveUnit;
 			_aliveUnit moveInGunner _vic;
 
-			waitUntil { sleep 1; !(isNull gunner _vic) };
+			waitUntil { !(isNull gunner _vic) };
+
+			_deadUnit moveInCargo _vic;
+			_deadUnit moveInAny _vic;
 
 			_vic setVariable ["Pie_GunnerReplacement_IsReacting", false];
 		};
@@ -171,7 +196,7 @@ Pie_fnc_DriverReactToLostGunner_SpawnNewGunner = {
 			{
 				moveOut _prevGunnerUnit;
 				_newGunner = _group createUnit [_replacementClass, getPos _vic, [], 0, "NONE"];
-				_newGunner assignAsGunner _vic;
+				// _newGunner assignAsGunner _vic;
 				_newGunner moveInGunner _vic;
 			};
 
