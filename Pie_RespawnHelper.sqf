@@ -23,7 +23,7 @@ if(isServer) then
 	addMissionEventHandler ["EntityRespawned", {
 		params ["_newEntity", "_oldEntity"];
 
-		if(isPlayer _newEntity) then
+		if(isPlayer _newEntity && (missionNamespace getVariable ["Pie_Respawn_Enabled", true])) then
 		{
 			[{
 				_playerLoadout = localNamespace getVariable ["Pie_Respawn_Loadout", []];
@@ -38,6 +38,12 @@ if(isServer) then
 				[[1, 2], [0]] call ace_spectator_fnc_updateCameraModes;
 				[[-2, -1], [0, 1, 2]] call ace_spectator_fnc_updateVisionModes;
 			}] remoteExec ["call", owner _newEntity];
+		} else {
+			_respawnedAI = missionNamespace getVariable ["Pie_Respawn_RespawnedAI", []];
+			_respawnedAI pushBack _newEntity;
+			_newEntity disableAI "PATH";
+			_newEntity disableAI "RADIOPROTOCOL";
+			missionNamespace setVariable ["Pie_Respawn_RespawnedAI", _respawnedAI, true];
 		};
 	}];
 };
@@ -89,6 +95,13 @@ Pie_fnc_DoRejoin = {
 
 			[false] call ace_spectator_fnc_setSpectator;
 		}] remoteExec ["call"];
+
+		// Reenable AI
+		{
+			_x enableAI "PATH";
+			_x enableAI "RADIOPROTOCOL";
+		} forEach missionNamespace getVariable ["Pie_Respawn_RespawnedAI", []];
+		missionNamespace setVariable ["Pie_Respawn_RespawnedAI", [], true];
 	};
 };
 

@@ -6,6 +6,10 @@ Usage:
 	[position, radius, class] call Pie_Helper_SpawnCache;
 */
 
+// Ensure DMP functions are ready, as we use some of them
+_dmpHandle = [] execVM "globalScripts\_ThirdParty\Pie_DMP_FunctionDefs.sqf";
+waitUntil { scriptDone _dmpHandle };
+
 _pos = _this param [0, [0, 0, 0]];
 _radius = _this param [1, 250];
 _class = _this param [2, "Box_FIA_Ammo_F"];

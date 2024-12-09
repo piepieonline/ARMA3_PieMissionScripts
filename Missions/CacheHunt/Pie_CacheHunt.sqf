@@ -169,7 +169,7 @@ Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pi
 				default {
 					_knowledge setVariable ["dmpKnowledgeSpecial", "nothing", true];
 					_knowledge setPos _aoCenter;
-				}
+				};
 			};
 
 			sleep 1;

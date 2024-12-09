@@ -2,6 +2,14 @@
 [setupLaptop, loadoutBox] execVM "globalScripts\Pie_Helper_DynamicPlayerFaction.sqf";
 [setupLaptop] execVM "globalScripts\Pie_Shoothouse_CQC.sqf";
 
+// Functions used by preset missions
+[] execVM "globalScripts\Pie_Helper_OccupyTown.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_SelectLocationOnMap.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_AssignEnemyFaction.sqf";
+
+// Preset missions
+[setupLaptop] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_CacheHunt.sqf";
+
 if(isServer) then
 {
 	[
@@ -17,6 +25,8 @@ if(isServer) then
 		},
 		nil, 1.5, true, true, "", "call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player) || !isMultiplayer", 5]
 	] remoteExec ["addAction", 0, true];
+
+	// TODO: Add action (with confirmation) to enable civis?
 };
 
 Pie_fnc_ZeusTemplate_HealPlayers = {

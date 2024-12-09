@@ -12,7 +12,8 @@
 	["Takistan Locals (3CB)", "CacheHunt\TakiLocals-3CB", "UK3CB_TKM_I"]
 ]] execVM "globalScripts\DynamicFactions\Pie_DynamicDMPFactionSelector.sqf";
 
-[] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+_handle_AIGunnerDownReaction = [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+waitUntil { scriptDone _handle_AIGunnerDownReaction };
 [] call Pie_fnc_WatchAllVehicleGunners;
 
 if(isServer) then
