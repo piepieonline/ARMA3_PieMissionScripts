@@ -1,5 +1,6 @@
 Pie_fnc_ZeusTemplate_SelectLocationOnMap = {
     _maxTownsSelected = _this param [0, -1];
+    _labelControl = _this param [1, objNull];
 
     openMap [true, false];
     
@@ -30,6 +31,11 @@ Pie_fnc_ZeusTemplate_SelectLocationOnMap = {
         };
 
         missionNamespace setVariable ["Pie_ZeusTemplate_Towns", _towns, true];
+
+        if(!isNull _labelControl) then
+        {
+            _labelControl ctrlSetText format ["Selected Locations: %1", _towns apply { name _x } joinString ", "];
+        };
 
         [] call Pie_fnc_ZeusTemplate_RedrawMarkers;
 

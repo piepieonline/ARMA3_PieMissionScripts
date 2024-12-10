@@ -16,33 +16,6 @@ Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\_ThirdPa
 Pie_Helper_SpawnCache = compileFinal preprocessFileLineNumbers "globalScripts\Pie_Helper_SpawnCache.sqf";
 call compile preprocessFileLineNumbers "globalScripts\_ThirdParty\Engima-Civilians-Traffic-Zombies-main\Engima\Civilians\Init.sqf";
 
-if(isServer) then
-{
-	_missionSetupInteractionPoint = _this param [0, objNull];
-
-	[
-		_missionSetupInteractionPoint, ["Prep Cache Hunt", {
-			[owner player] remoteExec ["Pie_fnc_ZeusTemplate_PrepCacheHunt", 2];
-		},
-		nil, 1.5, true, true, "", "true", 5]
-	] remoteExec ["addAction", 0, true];
-
-	[
-		_missionSetupInteractionPoint, ["Start Cache Hunt", {
-			[owner player] remoteExec ["Pie_fnc_ZeusTemplate_StartCacheHunt", 2];
-		},
-		nil, 1.5, true, true, "", "true", 5]
-	] remoteExec ["addAction", 0, true];
-};
-
-
-Pie_fnc_ZeusTemplate_PrepCacheHunt = {
-    _callingPlayerOwner = _this param [0, 0];
-
-    [] call Pie_fnc_ZeusTemplate_AssignEnemyFaction;
-    [-1] remoteExec ["Pie_fnc_ZeusTemplate_SelectLocationOnMap", _callingPlayerOwner];
-};
-
 Pie_fnc_ZeusTemplate_StartCacheHunt = {
     _callingPlayerOwner = _this param [0, 0];
 
@@ -57,9 +30,6 @@ Pie_fnc_ZeusTemplate_StartCacheHunt = {
 	missionNamespace setVariable ["Pie_CacheObject", _cache, true];
 
     {
-        // nul = [target, side, radius, spawn [men, divers], spawn [land vehicles, water vehicles, air vehicles], still, men [groups, random extra groups], vehicle [groups, random extra groups], skills, group, custom init, ID, smokes, doors, classes] execVM "LV\militarize.sqf";
-        // nul = [getpos _x, 2, 250, [true, false], [true,false,true], false, [4, 2], [1, 2], "default", nil, nil, nil, true, true, ["ALL"]] execVM "LV\militarize.sqf";
-        
 		_centerOn = getPos _x;
 		if(_x == _selectedTown) then 
 		{
@@ -217,39 +187,11 @@ Pie_fnc_DoNPCTalkIntel = {
 	};
 };
 
-/*
-LV_classnames = {
-    _sideFilters = param [0,["ALL"],[]];
-    _request = param [1,[],[]];
-    _side = _request param [0,0,[1,2,3]];
-    _type = _request param [1,0,[1,2,3,4,5,6,7]];
+Pie_fnc_UpdateEnemyLabel = {
+	_assignedEnemiesText = _this param [0, 0];
 
-    _results = [];
+	_assignedInfCount = count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []]);
+    _assignedVicCount = count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyVic", []]);
 
-    switch(_type) do {
-        case 1:{
-            _results = [missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyVic", []]];
-        };
-        case 2:{
-            _results = []; // _CIVtanks;
-        };
-        case 3:{
-            _results = []; // _CIVhelis;
-        };
-        case 4:{
-            _results = []; // _CIVplanes;
-        };
-        case 5:{
-            _results = []; // _CIVships;
-        };
-        case 6:{
-            _results = [missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []]];
-        };
-        case 7:{
-            _results = [[]]; // _CIVdivers;
-        };
-    };
-
-    _results;
+	_assignedEnemiesText ctrlSetText format ["Selected Enemies: %1 infantry groups, %2 vehicles", _assignedInfCount, _assignedVicCount];
 };
-*/
