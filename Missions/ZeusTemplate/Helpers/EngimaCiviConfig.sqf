@@ -17,7 +17,7 @@ _parameters = [
 			_civiUnit, ["Ask for intel", {
 					params ["_target", "_caller", "_actionId", "_arguments"];
 					// missionNamespace setVariable ['Pie_Mis_Zeus_CacheIntelFound', true, true];
-					[_target] remoteExec ["Pie_fnc_DoNPCTalkIntel", 2];
+					[_target] call Pie_fnc_DoNPCTalkIntel;
 				},
 				nil, 1.5, true, true, "",
 				"!(missionNamespace getVariable 'Pie_Mis_Zeus_CacheIntelFound')",
@@ -28,10 +28,6 @@ _parameters = [
 	["ON_UNIT_REMOVE_CALLBACK", { true }],
 	["DEBUG", false]	//false true
 ];
-
-Pie_fnc_GetCiviTypesPerMap = {
-
-};
 
 // Start the script
 _parameters spawn ENGIMA_CIVILIANS_StartCivilians;

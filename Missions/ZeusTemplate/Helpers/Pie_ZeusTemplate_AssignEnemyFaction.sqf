@@ -1,4 +1,6 @@
 Pie_fnc_ZeusTemplate_AssignEnemyFaction = {
+    _callingPlayerOwner = _this param [0, 0];
+
     _enemyFactionVehicles = [];
     _enemyFactionInf = [];
 
@@ -35,7 +37,7 @@ Pie_fnc_ZeusTemplate_AssignEnemyFaction = {
     // Update the label if it's visible
     try
     {
-        [(findDisplay 1994) displayCtrl 31] call Pie_fnc_UpdateEnemyLabel;
+        [] remoteExec ["Pie_fnc_UpdateEnemyLabel", _callingPlayerOwner];
     }
     catch { };
 };

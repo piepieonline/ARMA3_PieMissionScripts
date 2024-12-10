@@ -186,12 +186,3 @@ Pie_fnc_DoNPCTalkIntel = {
 		"HCOLL_Dialog_Layer" cutFadeOut 1;
 	};
 };
-
-Pie_fnc_UpdateEnemyLabel = {
-	_assignedEnemiesText = _this param [0, 0];
-
-	_assignedInfCount = count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []]);
-    _assignedVicCount = count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyVic", []]);
-
-	_assignedEnemiesText ctrlSetText format ["Selected Enemies: %1 infantry groups, %2 vehicles", _assignedInfCount, _assignedVicCount];
-};

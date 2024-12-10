@@ -75,9 +75,9 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 	_assignEnemyFactionButton = _display displayCtrl 30;
 	_assignEnemyFactionButton ctrlAddEventHandler ["ButtonClick",
 	{
-		[] remoteExec ["Pie_fnc_ZeusTemplate_AssignEnemyFaction", 2];
+		[owner player] remoteExec ["Pie_fnc_ZeusTemplate_AssignEnemyFaction", 2];
 	}];
-	[_display displayCtrl 31] call Pie_fnc_UpdateEnemyLabel;
+	[] call Pie_fnc_UpdateEnemyLabel;
 
 	_startMissionButton = _display displayCtrl 40;
 	_startMissionButton ctrlAddEventHandler ["ButtonClick",
@@ -95,6 +95,14 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 	}];
 };
 
+Pie_fnc_UpdateEnemyLabel = {
+	_assignedEnemiesText = (findDisplay 1994) displayCtrl 31;
+
+	_assignedInfCount = count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []]);
+    _assignedVicCount = count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyVic", []]);
+
+	_assignedEnemiesText ctrlSetText format ["Selected Enemies: %1 infantry groups, %2 vehicles", _assignedInfCount, _assignedVicCount];
+};
 
 Pie_fnc_ZeusTemplate_StartRIS = {
 	_display = createDialog ["RscDisplayEmpty", true];
