@@ -41,11 +41,18 @@ Pie_fnc_ZeusTemplate_SelectLocationOnMap = {
 
         true;
     };
+
+    [] spawn
+    {
+        sleep 0.5;
+        waitUntil { !visibleMap };
+        onMapSingleClick "";
+    };
 };
 
 Pie_fnc_ZeusTemplate_RedrawMarkers = {
     _towns = missionNamespace getVariable ["Pie_ZeusTemplate_Towns", []];
-    _markers = missionNamespace getVariable ["Pie_ZeusTemplate_Markers", []];
+    _markers = missionNamespace getVariable ["Pie_ZeusTemplate_TownMarkers", []];
 
     {
         deleteMarker _x;
@@ -69,5 +76,13 @@ Pie_fnc_ZeusTemplate_RedrawMarkers = {
         _markers pushBack _markerName;
     } forEach _towns;
 
-    missionNamespace setVariable ["Pie_ZeusTemplate_Markers", _markers, true];
+    missionNamespace setVariable ["Pie_ZeusTemplate_TownMarkers", _markers, true];
+};
+
+Pie_fnc_ZeusTemplate_ClearTownMarkers = {
+    _markers = missionNamespace getVariable ["Pie_ZeusTemplate_TownMarkers", []];
+
+    {
+        deleteMarker _x;
+    } forEach _markers;
 };

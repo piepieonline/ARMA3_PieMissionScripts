@@ -31,6 +31,7 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 			sleep 0.5;
 			waitUntil { !visibleMap };
 			[] call Pie_fnc_ZeusTemplate_OpenMissionPlanning;
+			[] call Pie_fnc_ZeusTemplate_ClearTownMarkers;
 		};
 	}];
 	_assignedLocationsText = _display displayCtrl 21;
@@ -68,7 +69,7 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 		switch (_missionTypeString) do
 		{
 			case "Cache Hunt": { closeDialog 1; [] call Pie_fnc_ZeusTemplate_OpenMissionPlanning_Mission_CacheHunt; };
-			case "CSAR": { };
+			case "CSAR": { closeDialog 1; [] call Pie_fnc_ZeusTemplate_OpenMissionPlanning_Mission_CSAR; };
 			case "Occupy (No objectives)": { };
 			default {  };
 		};

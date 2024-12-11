@@ -14,21 +14,8 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
     _callingPlayerOwner = _this param [0, 0];
 
     _aoTown = selectRandom (missionNamespace getVariable ["Pie_ZeusTemplate_Towns", []]);
-	
-	// TODO: Diary entries
-	// TODO: If location is known
-	if(true) then
-	{
-		// Create the AO marker
-		_markerstr = createMarker [("aoTown_" + text _aoTown), position _aoTown];
-		_markerstr setMarkerShape "ELLIPSE";
-		_markerstr setMarkerSize [600, 600];
-		_markerstr setMarkerColor "ColorRed";
-		_markerstr setMarkerAlpha 0.5;
-		_markerstr setMarkerBrush "BDiagonal";
-	};
 
-	// Spawn the hostage
+	// Find an indoors location to put the pilot - use the same logic as spawning caches
 	_hostagePosition = [position (_aoTown), 250, objNull, false] call Pie_Helper_SpawnCache;
 
 	// Select the pilots class based on the player faction
@@ -58,6 +45,7 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
 		_hostageClass = "B_Helipilot_F";
 	};
 
+	// Spawn and handcuff the pilot
 	_unit = (createGroup [west, true]) createUnit [_hostageClass, _hostagePosition, [], 0, "NONE"];
 	[_unit, true] call ACE_captives_fnc_setHandcuffed;
 
@@ -73,10 +61,15 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
 	_wreck = createVehicle ["Land_Wreck_Heli_Attack_01_F", _wreckPos, [], 0, "NONE"];
 	_smoke = createVehicle ['test_EmptyObjectForSmoke', _wreckPos, [], 0, 'can_collide']; 
 
-	// TODO: Spawn the wreck guards
+	// Spawn the wreck guards
+	// Vehicle
+	[[_wreckPos, 20, 75] call BIS_fnc_findSafePos, random 360, selectRandom (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyVic", []]) select 0, east] call BIS_fnc_spawnVehicle;
+	// Inf
+	_grp = [[_wreckPos, 10, 50] call BIS_fnc_findSafePos, east, selectRandom (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []])] call BIS_fnc_spawnGroup;
+	[_grp, getPos (leader _grp), 25, [], true, true] call lambs_wp_fnc_taskCamp;
 
 	// Create the objectives
-	[true, "Pie_Task_CSAR_DestroyWreck", ["The wreck needs to be destroyed to stop the enemy getting any intel from it.", "Find and destroy the wreck"], objNull, "AUTOASSIGNED", -1, true, "Destroy", false] call BIS_fnc_taskCreate;
+	[true, "Pie_Task_CSAR_DestroyWreck", ["The wreck needs to be destroyed to stop the enemy getting any classified technology from it.", "Find and destroy the wreck"], objNull, "AUTOASSIGNED", -1, true, "Destroy", false] call BIS_fnc_taskCreate;
 	[_wreck, ["Explosion", {
 		params ["_vehicle", "_damage", "_explosionSource"];
 
@@ -87,4 +80,28 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
 	}]] remoteExec ["addEventHandler", 0, true];
 	
 	[true, "Pie_Task_CSAR_RescuePilot", ["The pilot needs to be found and brought home safely.", "Rescue the pilot"], objNull, "AUTOASSIGNED", -1, true, "Search", false] call BIS_fnc_taskCreate;
+
+	// Intel
+	// Create intel to help players find the wreck
+	_heliIntelLine = format ["%1 of here", ([position _aoTown, getMarkerPos "respawn"] call DMP_fnc_ClosestPosition)];
+	_pilotIntelLine = "";
+
+	if(missionNamespace getVariable ["Pie_Mis_Zeus_Mission_CSAR_KnownCrashSite", true]) then
+	{
+		_heliIntelLine = format ["%1 of %2", ([position _wreck, position _aoTown] call DMP_fnc_ClosestPosition), text _aoTown];
+		_pilotIntelLine = " and taken somewhere in town";
+
+		_markerstr = createMarker [("aoTown"), position _aoTown];
+		_markerstr setMarkerShape "ELLIPSE";
+		_markerstr setMarkerSize [500, 500];
+		_markerstr setMarkerColor "ColorRed";
+		_markerstr setMarkerAlpha 0.5;
+		_markerstr setMarkerBrush "BDiagonal";
+	};
+
+	missionNamespace setVariable ["Pie_Mis_Zeus_CSAR_DiaryLine", format ["A helicopter was lost %1, and radio interceptions confirm a pilot has been captured%2.<br />Destroy the wreck, rescue the pilot, and bring them home.", _heliIntelLine,_pilotIntelLine], true];
+
+	{
+		player createDiaryRecord ["Diary", ["Situation", missionNamespace getVariable "Pie_Mis_Zeus_CSAR_DiaryLine"]];	
+	} remoteExec ["call", 0, true];
 }

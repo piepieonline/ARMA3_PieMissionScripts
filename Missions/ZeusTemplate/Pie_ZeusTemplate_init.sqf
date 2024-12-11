@@ -1,3 +1,13 @@
+/*
+	How to add a new mission template:
+		- Add to 'Preset Missions' below
+		- If using a config UI:
+			- Export to ./UI/
+			- Add to 'Specific mission setup UI screens' below
+			- Add dialog hpp file to description.ext
+			- Add to 'Open mission specific settings' switch in `.\UI\Pie_ZeusTemplate_ZeusMissionSetupDialog.sqf`
+*/
+
 [false] execVM "globalScripts\Pie_RespawnHelper.sqf";
 [setupLaptop, loadoutBox] execVM "globalScripts\Pie_Helper_DynamicPlayerFaction.sqf";
 [setupLaptop] execVM "globalScripts\Pie_Shoothouse_CQC.sqf";
@@ -11,6 +21,7 @@
 [] execVM "globalScripts\Missions\ZeusTemplate\UI\Pie_ZeusTemplate_ZeusMissionSetupDialog.sqf";
 // Specific mission setup UI screens
 [] execVM "globalScripts\Missions\ZeusTemplate\UI\Pie_ZeusTemplate_ZeusMissionSetupMissionCacheHuntDialog.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\UI\Pie_ZeusTemplate_ZeusMissionSetupMissionCSARDialog.sqf";
 
 // Preset missions
 [] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_CacheHunt.sqf";
