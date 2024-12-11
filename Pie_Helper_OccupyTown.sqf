@@ -2,11 +2,16 @@ Pie_fnc_OccupyTown = {
     _town = _this param [0, objNull];
     _occupyCenter = _this param [1, objNull];
     
-    _patrols = _this param [2, 2];
-    _addedPatrols = _this param [3, 0];
-    _garrisons = _this param [4, 2];
-
-    _vehicleCount = _this param [5, 2];
+    _occupationParams = _this param [2, [
+        missionNamespace getVariable ["Pie_Mis_Zeus_Occupy_Patrols", "[2,3]"],
+        missionNamespace getVariable ["Pie_Mis_Zeus_Occupy_Garrisons", "2"],
+        missionNamespace getVariable ["Pie_Mis_Zeus_Occupy_Vehicles", "2"],
+        missionNamespace getVariable ["Pie_Mis_Zeus_Occupy_VehiclePatrols", "0"]
+    ]];
+    _patrols = [_occupationParams select 0] call Pie_fnc_GetRandomFromInput;
+    _garrisons = [_occupationParams select 1] call Pie_fnc_GetRandomFromInput;
+    _vehicleCount = [_occupationParams select 2] call Pie_fnc_GetRandomFromInput;
+    _vehiclePatrolCount = [_occupationParams select 3] call Pie_fnc_GetRandomFromInput;
 
     _townPos = getPos _town;
 
@@ -17,7 +22,7 @@ Pie_fnc_OccupyTown = {
     if(count _enemyFactionInf > 0) then
     {
         // Patrols
-        for "_i" from 1 to (_patrols + ([0, _addedPatrols] call BIS_fnc_randomInt)) do
+        for "_i" from 1 to _patrols do
         {
             _grp = [_townPos, east, selectRandom _enemyFactionInf] call BIS_fnc_spawnGroup;
             [_grp, _townPos, 250, 4, [], true] call lambs_wp_fnc_taskPatrol;
@@ -53,9 +58,26 @@ Pie_fnc_OccupyTown = {
             {
                 _x moveInAny _spawnedVic;
             } forEach units _vicCrew;
-        }; 
+        };
+
+        // TODO: Vehicles patrolling between selected towns
     };
     
     // TODO: Emplacements?
     // TODO: Air vehicles?
 };
+
+// Takes a stringified number, or a number range - either "1" or "[1,2]" and returns a random number in that range  
+Pie_fnc_GetRandomFromInput = {
+    _string = _this param [0, ""];
+
+    if !(((_string splitString "") select 0)=="[") then { _string = format["[%1]",_string] };
+    _arr = (parseSimpleArray _string);
+
+    if(count _arr == 1) then
+    {
+        _arr pushBack (_arr select 0);
+    };
+
+    [_arr select 0, _arr select 1] call BIS_fnc_randomInt;
+}

@@ -13,6 +13,7 @@ waitUntil { scriptDone _dmpHandle };
 _pos = _this param [0, [0, 0, 0]];
 _radius = _this param [1, 250];
 _class = _this param [2, "Box_FIA_Ammo_F"];
+_doSpawn = _this param [3, true];
 
 _buildings = [_pos, _radius] call DMP_fnc_GetOpenBuildings;
 { 
@@ -33,9 +34,15 @@ if ((count _buildings)>0) then
 	};
 };
 
-_objCacheObject = _class createVehicle _pos;
-_pos = [_pos, _class] call DMP_fnc_LootPos;
-_objCacheObject setPos _pos;
-_objCacheObject setDir(random 360);
+_result = _pos;
 
-_objCacheObject
+if(_doSpawn) then
+{
+	_objCacheObject = _class createVehicle _pos;
+	_pos = [_pos, _class] call DMP_fnc_LootPos;
+	_objCacheObject setPos _pos;
+	_objCacheObject setDir(random 360);
+	_result = _objCacheObject;
+};
+
+_result

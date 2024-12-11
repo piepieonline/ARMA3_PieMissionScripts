@@ -1,7 +1,7 @@
-#include "CustomControlClasses.hpp"
-class ZeusMissionSetupDialog
+#include "CustomControlClasses.h"
+class ZeusMissionSetupMissionCacheHuntDialog
 {
-	idd = 1994;
+	idd = -1;
 	
 	class ControlsBackground
 	{
@@ -25,66 +25,80 @@ class ZeusMissionSetupDialog
 	};
 	class Controls
 	{
-		class DropdownMissionType
+		class ButtonMissionToggleRTB
 		{
-			type = 4;
+			type = 1;
 			idc = 10;
-			x = safeZoneX + safeZoneW * 0.38;
-			y = safeZoneY + safeZoneH * 0.16493056;
-			w = safeZoneW * 0.36328125;
-			h = safeZoneH * 0.03125;
-			style = 16;
-			arrowEmpty = "\A3\ui_f\data\GUI\RscCommon\RscCombo\arrow_combo_ca.paa";
-			arrowFull = "\A3\ui_f\data\GUI\RscCommon\RscCombo\arrow_combo_active_ca.paa";
+			x = safeZoneX + safeZoneW * 0.26171875;
+			y = safeZoneY + safeZoneH * 0.17361112;
+			w = safeZoneW * 0.47558594;
+			h = safeZoneH * 0.04340278;
+			style = 0+2;
+			text = "Toggle Objective Recovery/Destroy in Place";
+			borderSize = 0;
 			colorBackground[] = {0.4,0.4,0.4,1};
+			colorBackgroundActive[] = {1,0,0,1};
+			colorBackgroundDisabled[] = {0.2,0.2,0.2,1};
+			colorBorder[] = {0,0,0,0};
 			colorDisabled[] = {0.2,0.2,0.2,1};
-			colorSelect[] = {1,0,0,1};
-			colorSelectBackground[] = {0,0,0,1};
+			colorFocused[] = {0.2,0.2,0.2,1};
+			colorShadow[] = {0,0,0,1};
 			colorText[] = {1,1,1,1};
 			font = "PuristaMedium";
-			maxHistoryDelay = 0;
+			offsetPressedX = 0.01;
+			offsetPressedY = 0.01;
+			offsetX = 0.01;
+			offsetY = 0.01;
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			soundCollapse[] = {"\A3\ui_f\data\sound\RscCombo\soundCollapse",0.1,1.0};
-			soundExpand[] = {"\A3\ui_f\data\sound\RscCombo\soundExpand",0.1,1.0};
-			soundSelect[] = {"\A3\ui_f\data\sound\RscCombo\soundSelect",0.1,1.0};
-			wholeHeight = 0.3;
-			class ComboScrollBar
-			{
-				color[] = {1,1,1,1};
-				thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
-				arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-				arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-				border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-				
-			};
+			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
+			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
+			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
+			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
+			onButtonClick = "";
 			
 		};
-		class LabelMissionType
+		class LabelMissionObjectiveRTB
 		{
 			type = 0;
 			idc = -1;
 			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.14930556;
-			w = safeZoneW * 0.08496094;
+			y = safeZoneY + safeZoneH * 0.22222223;
+			w = safeZoneW * 0.23144532;
 			h = safeZoneH * 0.06770834;
-			style = 0;
-			text = "Mission Type:";
+			style = 1;
+			text = "Objective: ";
 			colorBackground[] = {0.8667,0.8157,0.2039,0};
 			colorText[] = {1,1,1,1};
 			font = "PuristaMedium";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class ButtonMissionLocation
+		class LabelMissionObjectiveRTBState
+		{
+			type = 0;
+			idc = 11;
+			x = safeZoneX + safeZoneW * 0.50683594;
+			y = safeZoneY + safeZoneH * 0.22222223;
+			w = safeZoneW * 0.23144532;
+			h = safeZoneH * 0.06770834;
+			style = 0;
+			text = "Destroy in Place";
+			colorBackground[] = {0.8667,0.8157,0.2039,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
+		};
+		class ButtonMissionToggleObjType
 		{
 			type = 1;
 			idc = 20;
 			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.22222223;
+			y = safeZoneY + safeZoneH * 0.29513889;
 			w = safeZoneW * 0.47558594;
 			h = safeZoneH * 0.04340278;
 			style = 0+2;
-			text = "Select Location on Map";
+			text = "Toggle Objective Model";
 			borderSize = 0;
 			colorBackground[] = {0.4,0.4,0.4,1};
 			colorBackgroundActive[] = {1,0,0,1};
@@ -107,80 +121,48 @@ class ZeusMissionSetupDialog
 			onButtonClick = "";
 			
 		};
-		class LabelMissionLocation
+		class LabelMissionObjectiveType
+		{
+			type = 0;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.26171875;
+			y = safeZoneY + safeZoneH * 0.34375;
+			w = safeZoneW * 0.23144532;
+			h = safeZoneH * 0.06770834;
+			style = 1;
+			text = "Objective Model:";
+			colorBackground[] = {0.8667,0.8157,0.2039,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
+		};
+		class LabelMissionObjectiveTypeState
 		{
 			type = 0;
 			idc = 21;
-			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.27083334;
-			w = safeZoneW * 0.47558594;
-			h = safeZoneH * 0.06770834;
-			style = 0+2;
-			text = "Selected Locations: None";
-			colorBackground[] = {0.8667,0.8157,0.2039,0};
-			colorText[] = {1,1,1,1};
-			font = "PuristaMedium";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
-		};
-		class ButtonMissionAssignEnemy
-		{
-			type = 1;
-			idc = 30;
-			x = safeZoneX + safeZoneW * 0.26171875;
+			x = safeZoneX + safeZoneW * 0.50683594;
 			y = safeZoneY + safeZoneH * 0.34375;
-			w = safeZoneW * 0.47558594;
-			h = safeZoneH * 0.04340278;
-			style = 0+2;
-			text = "Assign spawned units as Opfor";
-			borderSize = 0;
-			colorBackground[] = {0.4,0.4,0.4,1};
-			colorBackgroundActive[] = {1,0,0,1};
-			colorBackgroundDisabled[] = {0.2,0.2,0.2,1};
-			colorBorder[] = {0,0,0,0};
-			colorDisabled[] = {0.2,0.2,0.2,1};
-			colorFocused[] = {0.2,0.2,0.2,1};
-			colorShadow[] = {0,0,0,1};
-			colorText[] = {1,1,1,1};
-			font = "PuristaMedium";
-			offsetPressedX = 0.01;
-			offsetPressedY = 0.01;
-			offsetX = 0.01;
-			offsetY = 0.01;
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
-			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
-			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
-			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
-			onButtonClick = "";
-			
-		};
-		class LabelMissionEnemyDetails
-		{
-			type = 0;
-			idc = 31;
-			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.39236112;
-			w = safeZoneW * 0.47558594;
+			w = safeZoneW * 0.23144532;
 			h = safeZoneH * 0.06770834;
-			style = 0+2;
-			text = "Selected Enemies: None";
+			style = 0;
+			text = "Conventional";
 			colorBackground[] = {0.8667,0.8157,0.2039,0};
 			colorText[] = {1,1,1,1};
 			font = "PuristaMedium";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class ButtonMissionOccupyConfig
+		class ButtonMissionSave
 		{
 			type = 1;
-			idc = 70;
+			idc = 100;
 			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.48958334;
+			y = safeZoneY + safeZoneH * 0.70833334;
 			w = safeZoneW * 0.47558594;
 			h = safeZoneH * 0.04340278;
 			style = 0+2;
-			text = "Location Occupation Configuration";
+			text = "Set";
 			borderSize = 0;
 			colorBackground[] = {0.4,0.4,0.4,1};
 			colorBackgroundActive[] = {1,0,0,1};
@@ -203,82 +185,18 @@ class ZeusMissionSetupDialog
 			onButtonClick = "";
 			
 		};
-		class ButtonMissionCiviConfig
+		class ButtonMissionCancel
 		{
 			type = 1;
-			idc = 50;
-			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.58680556;
-			w = safeZoneW * 0.47558594;
-			h = safeZoneH * 0.04340278;
-			style = 0+2;
-			text = "Civilian Configuration";
-			borderSize = 0;
-			colorBackground[] = {0.4,0.4,0.4,1};
-			colorBackgroundActive[] = {1,0,0,1};
-			colorBackgroundDisabled[] = {0.2,0.2,0.2,1};
-			colorBorder[] = {0,0,0,0};
-			colorDisabled[] = {0.2,0.2,0.2,1};
-			colorFocused[] = {0.2,0.2,0.2,1};
-			colorShadow[] = {0,0,0,1};
-			colorText[] = {1,1,1,1};
-			font = "PuristaMedium";
-			offsetPressedX = 0.01;
-			offsetPressedY = 0.01;
-			offsetX = 0.01;
-			offsetY = 0.01;
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
-			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
-			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
-			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
-			onButtonClick = "";
-			
-		};
-		class ButtonMissionConfig
-		{
-			type = 1;
-			idc = 60;
-			x = safeZoneX + safeZoneW * 0.26171875;
-			y = safeZoneY + safeZoneH * 0.68402778;
-			w = safeZoneW * 0.47558594;
-			h = safeZoneH * 0.04340278;
-			style = 0+2;
-			text = "Mission Specific Configuration";
-			borderSize = 0;
-			colorBackground[] = {0.4,0.4,0.4,1};
-			colorBackgroundActive[] = {1,0,0,1};
-			colorBackgroundDisabled[] = {0.2,0.2,0.2,1};
-			colorBorder[] = {0,0,0,0};
-			colorDisabled[] = {0.2,0.2,0.2,1};
-			colorFocused[] = {0.2,0.2,0.2,1};
-			colorShadow[] = {0,0,0,1};
-			colorText[] = {1,1,1,1};
-			font = "PuristaMedium";
-			offsetPressedX = 0.01;
-			offsetPressedY = 0.01;
-			offsetX = 0.01;
-			offsetY = 0.01;
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
-			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
-			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
-			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
-			onButtonClick = "";
-			
-		};
-		class ButtonMissionStart
-		{
-			type = 1;
-			idc = 40;
+			idc = 101;
 			x = safeZoneX + safeZoneW * 0.26171875;
 			y = safeZoneY + safeZoneH * 0.78125;
 			w = safeZoneW * 0.47558594;
 			h = safeZoneH * 0.04340278;
-			style = 2;
-			text = "Start";
+			style = 0+2;
+			text = "Discard";
 			borderSize = 0;
-			colorBackground[] = {0.302,0.502,0.302,1};
+			colorBackground[] = {0.4,0.4,0.4,1};
 			colorBackgroundActive[] = {1,0,0,1};
 			colorBackgroundDisabled[] = {0.2,0.2,0.2,1};
 			colorBorder[] = {0,0,0,0};
@@ -286,7 +204,7 @@ class ZeusMissionSetupDialog
 			colorFocused[] = {0.2,0.2,0.2,1};
 			colorShadow[] = {0,0,0,1};
 			colorText[] = {1,1,1,1};
-			font = "PuristaBold";
+			font = "PuristaMedium";
 			offsetPressedX = 0.01;
 			offsetPressedY = 0.01;
 			offsetX = 0.01;

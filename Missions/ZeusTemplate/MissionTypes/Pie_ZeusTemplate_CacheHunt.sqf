@@ -1,15 +1,16 @@
 /*
 	Zeus Template: Cache Hunt
 		Players have to find a cache hidden in a town, and either destroy or retrieve it
+		Fills all selected towns, chooses one to contain the cache
+		Civilians might know information on the cache location
 		Requires Zeus to place down the units and vehicles that the enemy faction should use
 
 	TODO
-		- UI for setup, don't rerun if their are no enemy units spawned
-		- Better vehicle setup
 		- Patrolling vehicles between towns
 		- Update diary tasks when intel is gained from civilians?
 		- Some sort of QRF when the cache is hit?
-		- Update the civi list (Hardcode per map)
+		- Civi per map override
+		- Task complete when cache is cooking off?
 */
 
 Zen_OccupyHouse = compileFinal preprocessFileLineNumbers "globalScripts\_ThirdParty\Zen_OccupyHouse.sqf";
@@ -23,7 +24,7 @@ Pie_fnc_ZeusTemplate_StartCacheHunt = {
 
 	// Spawn cache
 	_selectedTown = selectRandom _towns;
-	_cache = [position (_selectedTown), 250, "IG_supplyCrate_F"] call Pie_Helper_SpawnCache;
+	_cache = [position (_selectedTown), 250, missionNamespace getVariable ["Pie_Mis_Zeus_Mission_CacheHunt_ObjectiveModel", "IG_supplyCrate_F"]] call Pie_Helper_SpawnCache;
 	_cachePosition = position _cache;
 	missionNamespace setVariable ["Pie_CachePosition", _cachePosition, true];
 	missionNamespace setVariable ["Pie_CacheTown", _selectedTown, true];
@@ -54,9 +55,7 @@ Pie_fnc_ZeusTemplate_StartCacheHunt = {
 	_taskTownNameList = (_towns apply { "<marker name='aoTown_" + text _x + "'>" + text _x + "</marker>" }) joinString ", ";
 
 	// Depending on the mission variant, create different objectives
-
-	// if((["destroyInPlace", 1] call BIS_fnc_getParamValue) == 1) then
-    if (true) then
+	if (missionNamespace getVariable ["Pie_Mis_Zeus_Mission_CacheHunt_Objective", "destroy"] == "destroy") then
 	{
 		// Destroy in place
 		[true, "Pie_Task_CacheHunt_GetCache", ["An enemy supply cache that needs to be destroyed has been reported somewhere in the vicinity of " + _taskTownNameList, "Find and destroy the cache"], objNull, "ASSIGNED", -1, true, "Destroy", false] call BIS_fnc_taskCreate;

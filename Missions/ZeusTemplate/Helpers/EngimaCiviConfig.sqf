@@ -3,8 +3,8 @@ private ["_parameters"];
 // Set civilian parameters.
 _parameters = [
 	["UNIT_CLASSES", call compile preprocessFileLineNumbers "globalScripts\Pie_Helper_GetCiviTypePerMap.sqf"],
-	["UNITS_PER_BUILDING", 1.1],
-	["MAX_GROUPS_COUNT", 10],
+	["UNITS_PER_BUILDING", missionNamespace getVariable ["Pie_Mis_Zeus_Civ_UnitsPerBuilding", 1.1]],
+	["MAX_GROUPS_COUNT", missionNamespace getVariable ["Pie_Mis_Zeus_Civ_MaxGroups", 10]],
 	["MIN_SPAWN_DISTANCE", 100],
 	["MAX_SPAWN_DISTANCE", 400],
 	["BLACKLIST_MARKERS", []],

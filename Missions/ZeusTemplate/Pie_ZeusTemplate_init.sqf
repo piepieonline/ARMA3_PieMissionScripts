@@ -7,8 +7,15 @@
 [] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_SelectLocationOnMap.sqf";
 [] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_AssignEnemyFaction.sqf";
 
+// UI for the preset missions
+[] execVM "globalScripts\Missions\ZeusTemplate\UI\Pie_ZeusTemplate_ZeusMissionSetupDialog.sqf";
+// Specific mission setup UI screens
+[] execVM "globalScripts\Missions\ZeusTemplate\UI\Pie_ZeusTemplate_ZeusMissionSetupMissionCacheHuntDialog.sqf";
+
 // Preset missions
-[setupLaptop] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_CacheHunt.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_CacheHunt.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_CSAR.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_OccupyTowns.sqf";
 
 if(isServer) then
 {
@@ -46,53 +53,6 @@ Pie_fnc_ZeusTemplate_HealPlayers = {
 		_x setDamage 0;
 		[_x] remoteExec ["ACE_medical_treatment_fnc_fullHealLocal"];
 	} forEach allPlayers;
-};
-
-
-Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
-	createDialog 'ZeusMissionSetupDialog';
-	_display = findDisplay 1994;
-
-	_missionTypeDropdown = _display displayCtrl 10;
-	_missionTypeDropdown lbAdd "Cache Hunt";
-	_missionTypeDropdown lbAdd "CSAR";
-
-	_openMapButton = _display displayCtrl 20;
-	_openMapButton ctrlAddEventHandler ["ButtonClick",
-	{
-		[-1, _display displayCtrl 21] remoteExec ["Pie_fnc_ZeusTemplate_SelectLocationOnMap", owner player];
-		closeDialog 1;
-		[] spawn
-		{
-			sleep 0.5;
-			waitUntil { !visibleMap };
-			[] call Pie_fnc_ZeusTemplate_OpenMissionPlanning;
-		};
-	}];
-	_assignedLocationsText = _display displayCtrl 21;
-	_assignedLocationsText ctrlSetText format ["Selected Locations: %1", (missionNamespace getVariable "Pie_ZeusTemplate_Towns") apply { text _x } joinString ", "];
-
-	_assignEnemyFactionButton = _display displayCtrl 30;
-	_assignEnemyFactionButton ctrlAddEventHandler ["ButtonClick",
-	{
-		[owner player] remoteExec ["Pie_fnc_ZeusTemplate_AssignEnemyFaction", 2];
-	}];
-	[] call Pie_fnc_UpdateEnemyLabel;
-
-	_startMissionButton = _display displayCtrl 40;
-	_startMissionButton ctrlAddEventHandler ["ButtonClick",
-	{
-		_dropdownControl = ((findDisplay 1994) displayCtrl 10);
-		_missionTypeString = _dropdownControl lbText (lbCurSel _dropdownControl);
-		switch (_missionTypeString) do
-		{
-			case "Cache Hunt": { [owner player] remoteExec ["Pie_fnc_ZeusTemplate_StartCacheHunt", 2] };
-			case "CSAR": { systemChat "Starting CSAR"; };
-			default { systemChat format ["Unknown mission type: %1", _missionTypeString] };
-		};
-		
-		closeDialog 1;
-	}];
 };
 
 Pie_fnc_UpdateEnemyLabel = {
