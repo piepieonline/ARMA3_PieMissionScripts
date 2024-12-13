@@ -1,4 +1,11 @@
 /*
+	Mission Ideas:
+		- Find arty, call in air strikes to destroy it
+		- Find a downed drone by tracking signals
+
+	TODO:
+		- If specific equipment is required for the mission, add to the loadoutBox
+
 	How to add a new mission template:
 		- Add to 'Preset Missions' below
 		- If using a config UI:
@@ -13,7 +20,7 @@
 [setupLaptop] execVM "globalScripts\Pie_Shoothouse_CQC.sqf";
 
 // Functions used by preset missions
-[] execVM "globalScripts\Pie_Helper_OccupyTown.sqf";
+[] execVM "globalScripts\Pie_Helper_OccupyTowns.sqf";
 [] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_SelectLocationOnMap.sqf";
 [] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_AssignEnemyFaction.sqf";
 

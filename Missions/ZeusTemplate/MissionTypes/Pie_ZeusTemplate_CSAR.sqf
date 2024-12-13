@@ -54,7 +54,7 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
 	_missedUnits = [_hostagePosition, units _garrisonForceGroup] call Zen_OccupyHouse;
 
 	// Occupy the town based on where the hostage is put
-	[_aoTown, _hostagePosition] call Pie_fnc_OccupyTown;
+	[[[_aoTown, _hostagePosition]], missionNamespace getVariable ["Pie_Mis_Zeus_Mission_CSAR_KnownCrashSite", true]] call Pie_fnc_OccupyTowns;
 
 	// Spawn the wreck
 	_wreckPos = (selectBestPlaces [_hostagePosition, 300, "meadow - (100 * waterDepth) - hills", 1, 1] select 0 select 0);
@@ -90,13 +90,6 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
 	{
 		_heliIntelLine = format ["%1 of %2", ([position _wreck, position _aoTown] call DMP_fnc_ClosestPosition), text _aoTown];
 		_pilotIntelLine = " and taken somewhere in town";
-
-		_markerstr = createMarker [("aoTown"), position _aoTown];
-		_markerstr setMarkerShape "ELLIPSE";
-		_markerstr setMarkerSize [500, 500];
-		_markerstr setMarkerColor "ColorRed";
-		_markerstr setMarkerAlpha 0.5;
-		_markerstr setMarkerBrush "BDiagonal";
 	};
 
 	missionNamespace setVariable ["Pie_Mis_Zeus_CSAR_DiaryLine", format ["A helicopter was lost %1, and radio interceptions confirm a pilot has been captured%2.<br />Destroy the wreck, rescue the pilot, and bring them home.", _heliIntelLine,_pilotIntelLine], true];

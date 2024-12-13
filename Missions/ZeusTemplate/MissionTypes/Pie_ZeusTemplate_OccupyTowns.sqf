@@ -11,17 +11,5 @@ Pie_fnc_ZeusTemplate_StartOccupyTowns = {
 
     _towns = missionNamespace getVariable ["Pie_ZeusTemplate_Towns", []];
 
-    {
-		[_x, getPos _x] call Pie_fnc_OccupyTown;
-    } forEach _towns;
-
-	// Create the AO marker (TODO: One marker covering everything)
-	{
-		_markerstr = createMarker [("aoTown_" + text _x), position _x];
-		_markerstr setMarkerShape "ELLIPSE";
-		_markerstr setMarkerSize [500, 500];
-		_markerstr setMarkerColor "ColorRed";
-		_markerstr setMarkerAlpha 0.5;
-		_markerstr setMarkerBrush "BDiagonal";
-	} forEach _towns;
+	[(_towns apply { [_x, getPos _x] })] call Pie_fnc_OccupyTowns;
 }

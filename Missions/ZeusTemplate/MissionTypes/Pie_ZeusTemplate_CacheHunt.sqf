@@ -30,26 +30,15 @@ Pie_fnc_ZeusTemplate_StartCacheHunt = {
 	missionNamespace setVariable ["Pie_CacheTown", _selectedTown, true];
 	missionNamespace setVariable ["Pie_CacheObject", _cache, true];
 
-    {
+	[_towns apply {
 		_centerOn = getPos _x;
 		if(_x == _selectedTown) then 
 		{
 			_centerOn = _cachePosition;
 		};
 
-		[_x, _cachePosition] call Pie_fnc_OccupyTown;
-
-    } forEach _towns;
-
-	// Create the AO marker (TODO: One marker covering everything)
-	{
-		_markerstr = createMarker [("aoTown_" + text _x), position _x];
-		_markerstr setMarkerShape "ELLIPSE";
-		_markerstr setMarkerSize [500, 500];
-		_markerstr setMarkerColor "ColorRed";
-		_markerstr setMarkerAlpha 0.5;
-		_markerstr setMarkerBrush "BDiagonal";
-	} forEach _towns;
+		[_x, _cachePosition]
+	}] call Pie_fnc_OccupyTowns;
 
 	// Create the task, and a trigger to complete it
 	_taskTownNameList = (_towns apply { "<marker name='aoTown_" + text _x + "'>" + text _x + "</marker>" }) joinString ", ";
