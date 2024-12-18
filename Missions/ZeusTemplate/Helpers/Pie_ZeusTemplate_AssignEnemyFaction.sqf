@@ -21,6 +21,12 @@ Pie_fnc_ZeusTemplate_AssignEnemyFaction = {
         // Group based
         {
             _x deleteGroupWhenEmpty true;
+
+            if(count (units _x) == 0) then
+            {
+                continue;
+            };
+
             _unitVehicle = vehicle leader _x;
             if (_unitVehicle != leader _x) then 
             {

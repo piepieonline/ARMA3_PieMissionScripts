@@ -49,9 +49,52 @@ Pie_fnc_ZeusTemplate_StartCSAR = {
 	_unit = (createGroup [west, true]) createUnit [_hostageClass, _hostagePosition, [], 0, "NONE"];
 	[_unit, true] call ACE_captives_fnc_setHandcuffed;
 
+	if(true) then
+	{
+		// Add the signal device to the box
+		loadoutBox addItemCargoGlobal ["hgun_esd_01_F", 1];
+		loadoutBox addItemCargoGlobal ["muzzle_antenna_02_f", 1];
+
+		// Add the signal source to the pilot
+		_signalRange = 300;
+		[{ 
+			params ["_units", "_freq", "_range"]; 
+			{ 
+				["crowsEW_spectrum_addBeacon", [_x, _freq, _range, "zeus"]] call CBA_fnc_serverEvent; 
+			} forEach _units; 
+		}, [[_unit], random [520, 805, 1090], _signalRange]] call CBA_fnc_execNextFrame;
+
+		for "_i" from 0 to 3 do
+		{
+			// The emitting object
+			_distractionSignalComputer = [position (_aoTown), 250, "RuggedTerminal_01_F"] call Pie_Helper_SpawnCache;
+
+			// Setup the signal source
+			[{ 
+				params ["_units", "_freq", "_range"]; 
+				{ 
+					["crowsEW_spectrum_addBeacon", [_x, _freq, _range, "zeus"]] call CBA_fnc_serverEvent; 
+				} forEach _units; 
+			}, [[_distractionSignalComputer], random [520, 805, 1090], _signalRange]] call CBA_fnc_execNextFrame;
+
+			// Chance to add a guard to the signal source
+			// 75% chance
+			if(random 100 < 75) then 
+			{
+				_distractionGuardUnit = [getPos _distractionSignalComputer, east, selectRandom (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []])] call BIS_fnc_spawnGroup;
+				// Delete the leftovers
+				{
+					deleteVehicle _x;
+				} forEach ([getPos _distractionSignalComputer, units _distractionGuardUnit] call Zen_OccupyHouse);
+			}
+		};
+	};
+
 	// Spawn the hostage's guard
 	_garrisonForceGroup = [_hostagePosition, east, selectRandom (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []])] call BIS_fnc_spawnGroup;
-	_missedUnits = [_hostagePosition, units _garrisonForceGroup] call Zen_OccupyHouse;
+	{
+		deleteVehicle _x;
+	} forEach ([_hostagePosition, units _garrisonForceGroup] call Zen_OccupyHouse);
 
 	// Occupy the town based on where the hostage is put
 	[[[_aoTown, _hostagePosition]], missionNamespace getVariable ["Pie_Mis_Zeus_Mission_CSAR_KnownCrashSite", true]] call Pie_fnc_OccupyTowns;

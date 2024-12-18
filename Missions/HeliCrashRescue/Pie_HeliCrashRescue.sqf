@@ -1,5 +1,10 @@
 [false] execVM "globalScripts\Pie_RespawnHelper.sqf";
 
+_handle_AIGunnerDownReaction = [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+waitUntil { scriptDone _handle_AIGunnerDownReaction };
+missionNamespace setVariable ["Pie_GunnerReplacement_ExcludedVehicles", [vicVic]];
+[] call Pie_fnc_WatchAllVehicleGunners;
+
 _action = ["SpawnAmmo", "Spawn Resupply Box", "", {
 	_newBox = createVehicle ["Box_NATO_Equip_F", getPos resupplySpawnPos];
 	clearItemCargoGlobal _newBox;
@@ -26,6 +31,7 @@ if(isServer) then
 		[100, false, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
 		[100, false, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
 		[100, false, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
+		[100, false, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
 		[100, true, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
 		[100, true, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
 		[100, true, "UK3CB_CHD_O_SL", "UK3CB_CHD_O_MD", "UK3CB_CHD_O_MG", "UK3CB_CHD_O_RIF_1", "UK3CB_CHD_O_RIF_3", "UK3CB_CHD_O_LAT"],
@@ -40,7 +46,7 @@ if(isServer) then
 	];
 
 	_enemyAAVics = [
-		[100, "UK3CB_CHD_O_MTLB_ZU23", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW"],
+		[100, "UK3CB_CHD_O_MTLB_ZU23", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW"],
 		[100, "UK3CB_CHD_O_ZU23", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW"],
 		[100, "UK3CB_CHD_O_ZU23", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW"],
 		[100, "UK3CB_CHD_O_ZU23", "UK3CB_CHD_O_CREW", "UK3CB_CHD_O_CREW"]
@@ -73,13 +79,20 @@ if(isServer) then
 	_murderVicConfig deleteAt 0;
 	_murderVicSquad = createGroup east;
 	_murderVic = (_murderVicConfig deleteAt 0) createVehicle _murderVicLocation;
+	_murderVic setUnloadInCombat [false, false];
+	_murderVic allowCrewInImmobile [true, true];
 
 	{
 		_unit = _murderVicSquad createUnit [_x, _murderVicLocation, [], 0, "NONE"];
 		_unit moveInAny _murderVic;
+		
 		_unit unassignItem "ItemMap"; 
 		_unit removeItem "ItemMap";
 	} forEach _murderVicConfig;
+
+	{
+		(_x select 0) assignAsCargo _murderVic;
+	} forEach fullCrew [_murderVic, "cargo", false];
 
 	_murderVic setFuel 0;
 	missionNamespace setVariable ["murderVicSquad", _murderVicSquad, true];

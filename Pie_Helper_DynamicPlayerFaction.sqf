@@ -139,7 +139,13 @@ Pie_fnc_DynPlayerFaction_ChooseLoadout = {
 				// We can't use the actual function because it uses typeOf -.-
 				// [player] call UK3CB_factions_Common_fnc_unit_loadout;
 				[player, null, _selection] execVM "globalScripts\_ThirdParty\Pie_UK3CB_LoadoutAssigner.sqf";
+
 			};
+			
+			player setUnitTrait ["engineer", if (getNumber (configFile >> "cfgVehicles" >> _selection >> "engineer") == 1) then { true } else { false }, true];
+			player setUnitTrait ["explosiveSpecialist", if (getNumber (configFile >> "cfgVehicles" >> _selection >> "canDeactivateMines") == 1) then { true } else { false }, true];
+			player setUnitTrait ["medic", if (getNumber (configFile >> "cfgVehicles" >> _selection >> "attendant") == 1) then { true } else { false }, true];
+			player setUnitTrait ["UAVHacker", if (getNumber (configFile >> "cfgVehicles" >> _selection >> "uavHacker") == 1) then { true } else { false }, true];
 		};
 	}];
 

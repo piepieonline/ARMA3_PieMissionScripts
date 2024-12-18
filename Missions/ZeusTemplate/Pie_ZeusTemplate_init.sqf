@@ -35,6 +35,16 @@
 [] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_CSAR.sqf";
 [] execVM "globalScripts\Missions\ZeusTemplate\MissionTypes\Pie_ZeusTemplate_OccupyTowns.sqf";
 
+// Make vehicles react to downed gunners better
+_handle_AIGunnerDownReaction = [] execVM "globalScripts\Pie_Helper_AIGunnerDownReaction.sqf";
+waitUntil { scriptDone _handle_AIGunnerDownReaction };
+[] call Pie_fnc_WatchAllVehicleGunners;
+
+clearItemCargoGlobal loadoutBox;
+clearMagazineCargoGlobal loadoutBox;
+clearWeaponCargoGlobal loadoutBox;
+clearBackpackCargoGlobal loadoutBox;
+
 if(isServer) then
 {
 	[

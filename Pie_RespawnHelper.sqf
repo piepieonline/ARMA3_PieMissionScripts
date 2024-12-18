@@ -3,7 +3,8 @@ Respawn setup for missions. Needs a marker position to respawn by default (2 sec
 Default spawns at the first found alive player, can also change to respawn in a set vehicle
 
 init.sqf: 
-	[] execVM "globalScripts\Pie_RespawnHelper.sqf";
+	[moveRespawnMarker] execVM "globalScripts\Pie_RespawnHelper.sqf";
+		moveRespawnMarker: Move the respawn marker to the first player's location when loading (useful for spawning on boats etc)
 */
 
 if(isServer) then
@@ -17,6 +18,17 @@ if(isServer) then
 			waitUntil { time > 0 };
 			"respawn" setMarkerPos (allPlayers select 0);
 		};
+	};
+
+	// When the first player has moved 100m from their spawn, save loadouts (Backup, as I always forget)
+	[] spawn {
+		_trackedPlayer = allPlayers select 0;
+		_originalPlayerLocation = getPos _trackedPlayer;
+		
+		waitUntil { sleep 10; _originalPlayerLocation distance2D (getPos _trackedPlayer) > 100 };
+
+		["Saving loadouts"] remoteExec ["systemChat"];
+		[] call Pie_fnc_SaveAllRespawnLoadouts;
 	};
 
 	// When someone respawns, put them in spectator mode

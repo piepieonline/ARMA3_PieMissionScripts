@@ -80,6 +80,16 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 	_startMissionButton ctrlAddEventHandler ["ButtonClick",
 	{
 		params ["_control"];
+
+		if (count (missionNamespace getVariable ["Pie_ZeusTemplate_Towns", []]) == 0) exitWith
+		{
+			systemChat "ERROR: No towns selected, no mission built";
+		};
+		if (count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyInf", []]) == 0 && count (missionNamespace getVariable ["Pie_ZeusMis_SelectedEnemyVic", []]) == 0) exitWith
+		{
+			systemChat "ERROR: No units assigned, no mission built";
+		};
+
 		_displayParent = ctrlParent _control;
 		_dropdownControl = (_displayParent displayCtrl 10);
 		_missionTypeString = _dropdownControl lbText (lbCurSel _dropdownControl);

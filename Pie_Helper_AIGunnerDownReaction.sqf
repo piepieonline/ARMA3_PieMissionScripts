@@ -28,7 +28,7 @@ Pie_fnc_WatchSpecificVehicles = {
 							};
 						};
 					};
-					sleep 1;
+					sleep 0.1;
 				}
 				forEach _vicsToWatch;
 			};
@@ -42,10 +42,11 @@ Pie_fnc_WatchAllVehicleGunners = {
 	{
 		[_allowDriveAway, _allowDriverIntoGun] spawn {
 			params ["_allowDriveAway", "_allowDriverIntoGun"];
+			_excludedVehicles = missionNamespace getVariable ["Pie_GunnerReplacement_ExcludedVehicles", []];
 			while { true } do
 			{
 				{
-					if(vehicle leader _x != leader _x) then
+					if(vehicle leader _x != leader _x && !(vehicle leader _x in _excludedVehicles)) then
 					{
 						_vic = vehicle leader _x;
 						_driver = driver _vic;
@@ -62,8 +63,8 @@ Pie_fnc_WatchAllVehicleGunners = {
 							};
 						};
 					};
+					sleep 0.1;
 				} forEach allGroups;
-				sleep 1;
 			};
 		};
 	};
