@@ -110,13 +110,29 @@ class ZeusMissionSetupDialog
 		class LabelMissionLocation
 		{
 			type = 0;
-			idc = 21;
+			idc = -1;
 			x = safeZoneX + safeZoneW * 0.26171875;
 			y = safeZoneY + safeZoneH * 0.27083334;
-			w = safeZoneW * 0.47558594;
+			w = safeZoneW * 0.23144532;
 			h = safeZoneH * 0.06770834;
-			style = 0+2;
-			text = "Selected Locations: None";
+			style = 1;
+			text = "Selected Locations:";
+			colorBackground[] = {0.8667,0.8157,0.2039,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
+		};
+		class LabelMissionLocationValue
+		{
+			type = 0;
+			idc = 21;
+			x = safeZoneX + safeZoneW * 0.50585938;
+			y = safeZoneY + safeZoneH * 0.27083334;
+			w = safeZoneW * 0.23144532;
+			h = safeZoneH * 0.06770834;
+			style = 0;
+			text = "None";
 			colorBackground[] = {0.8667,0.8157,0.2039,0};
 			colorText[] = {1,1,1,1};
 			font = "PuristaMedium";

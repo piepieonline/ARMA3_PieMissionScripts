@@ -45,6 +45,12 @@ Pie_fnc_WatchAllVehicleGunners = {
 			_excludedVehicles = missionNamespace getVariable ["Pie_GunnerReplacement_ExcludedVehicles", []];
 			while { true } do
 			{
+				if ((missionNamespace getVariable ["Pie_GunnerReplacement_Paused", false])) then
+				{
+					sleep 1;
+					continue;
+				};
+
 				{
 					if(vehicle leader _x != leader _x && !(vehicle leader _x in _excludedVehicles)) then
 					{

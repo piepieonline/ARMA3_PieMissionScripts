@@ -23,6 +23,7 @@
 [] execVM "globalScripts\Pie_Helper_OccupyTowns.sqf";
 [] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_SelectLocationOnMap.sqf";
 [] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_AssignEnemyFaction.sqf";
+[] execVM "globalScripts\Missions\ZeusTemplate\Helpers\Pie_ZeusTemplate_AmbientCombat.sqf";
 
 // UI for the preset missions
 [] execVM "globalScripts\Missions\ZeusTemplate\UI\Pie_ZeusTemplate_ZeusMissionSetupDialog.sqf";
@@ -69,7 +70,7 @@ if(isServer) then
 	] remoteExec ["addAction", 0, true];
 
 	[
-		setupLaptop, ["Enable Civilian spawns (Don't use if using mission setup!)", {
+		setupLaptop, ["Enable Civilian spawns (Don't use if using the CacheHunt mission!)", {
 			[] call Pie_fnc_ZeusTemplate_EnableCivilians;
 		},
 		nil, 1.5, true, true, "", "call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player) || !isMultiplayer", 5]

@@ -60,6 +60,13 @@ if(isServer) then
 	}];
 };
 
+// Add actions to ZEN context menu as well
+[["RespawnerParent", "Respawn", "\A3\ui_f\data\map\markers\nato\respawn_unknown_ca.paa"] call zen_context_menu_fnc_createAction, [], 0] call zen_context_menu_fnc_addAction;
+[["RespawnerRespawnToVehicle", "Respawn Players To Vehicle", "\A3\ui_f\data\map\markers\nato\respawn_unknown_ca.paa", {["vic"] call Pie_fnc_DoRejoin}, {!isNull (missionNamespace getVariable ["PieRespawn_RespawnVic", objNull])}] call zen_context_menu_fnc_createAction, ["RespawnerParent"], 0] call zen_context_menu_fnc_addAction;
+[["RespawnerRespawnToVehicle", "Respawn Players To Team", "\A3\ui_f\data\map\markers\nato\respawn_unknown_ca.paa", {["team"] call Pie_fnc_DoRejoin}] call zen_context_menu_fnc_createAction, ["RespawnerParent"], 0] call zen_context_menu_fnc_addAction;
+[["RespawnerRespawnToVehicle", "Respawn Players To Base", "\A3\ui_f\data\map\markers\nato\respawn_unknown_ca.paa", {["base"] call Pie_fnc_DoRejoin}] call zen_context_menu_fnc_createAction, ["RespawnerParent"], 0] call zen_context_menu_fnc_addAction;
+[["RespawnerSetVehicle", "Set Vehicle", "\a3\ui_f\data\igui\cfg\simpletasks\types\car_ca.paa", {[_objects select 0] call Pie_fnc_SetRejoinVic}, {count _objects == 1}] call zen_context_menu_fnc_createAction, ["RespawnerParent"], 0] call zen_context_menu_fnc_addAction;
+
 Pie_fnc_DoRejoin = {
 	params ["_location"];
 	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
@@ -94,12 +101,14 @@ Pie_fnc_DoRejoin = {
 				_respawnVic = missionNamespace getVariable ["PieRespawn_RespawnVic", objNull];
 				if(_location == "vic" && !isNull _respawnVic && alive _respawnVic) then
 				{
+					// [format ["Respawning %1 at vehicle %2", name player, typeof _respawnVic]] remoteExec ["systemChat"];
 					player moveInAny _respawnVic;
 				}
 				else
 				{
 					if((_location == "team" || _location == "player") && !isNull _respawnPlayer) then
 					{
+						// [format ["Respawning %1 at player %2", name player, name _respawnPlayer]] remoteExec ["systemChat"];
 						player setPosATL (getPosATL _respawnPlayer);
 					};
 				};
@@ -112,17 +121,27 @@ Pie_fnc_DoRejoin = {
 		{
 			_x enableAI "PATH";
 			_x enableAI "RADIOPROTOCOL";
-		} forEach missionNamespace getVariable ["Pie_Respawn_RespawnedAI", []];
+		} forEach (missionNamespace getVariable ["Pie_Respawn_RespawnedAI", []]);
 		missionNamespace setVariable ["Pie_Respawn_RespawnedAI", [], true];
 	};
 };
 
 Pie_fnc_SetRejoinVic = {
 	if (call BIS_fnc_admin != 0 || clientOwner == 2 || !isNull (getAssignedCuratorLogic player)) then {
-		if(vehicle player != player) then
+		params ["_selectedVehicle"];
+		
+		if (!isNull _selectedVehicle) then
 		{
-			missionNamespace setVariable ["PieRespawn_RespawnVic", vehicle player, true];
-			hint ("Respawn vehicle set: " + (typeof vehicle player));
+			hint ("Respawn vehicle set: " + (typeof _selectedVehicle));
+			missionNamespace setVariable ["PieRespawn_RespawnVic", _selectedVehicle, true];
+		}
+		else
+		{
+			if (vehicle player != player) then
+			{
+				hint ("Respawn vehicle set: " + (typeof vehicle player));
+				missionNamespace setVariable ["PieRespawn_RespawnVic", vehicle player, true];
+			};
 		};
 	};
 };

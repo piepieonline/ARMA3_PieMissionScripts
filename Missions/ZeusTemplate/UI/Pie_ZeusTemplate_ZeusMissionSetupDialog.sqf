@@ -6,9 +6,9 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
     _display = createDialog ['ZeusMissionSetupDialog', true];
 
 	_missionTypeDropdown = _display displayCtrl 10;
+	_missionTypeDropdown lbAdd "Occupy (No objectives)";
 	_missionTypeDropdown lbAdd "Cache Hunt";
 	_missionTypeDropdown lbAdd "CSAR";
-	_missionTypeDropdown lbAdd "Occupy (No objectives)";
 
 	_missionTypeDropdown ctrlAddEventHandler ["LBSelChanged",
 	{
@@ -24,7 +24,7 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 	_openMapButton = _display displayCtrl 20;
 	_openMapButton ctrlAddEventHandler ["ButtonClick",
 	{
-		[-1, _display displayCtrl 21] remoteExec ["Pie_fnc_ZeusTemplate_SelectLocationOnMap", owner player];
+		[-1, _display displayCtrl 21, false] remoteExec ["Pie_fnc_ZeusTemplate_SelectLocationOnMap", owner player];
 		closeDialog 1;
 		[] spawn
 		{
@@ -35,7 +35,7 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 		};
 	}];
 	_assignedLocationsText = _display displayCtrl 21;
-	_assignedLocationsText ctrlSetText format ["Selected Locations: %1", (missionNamespace getVariable "Pie_ZeusTemplate_Towns") apply { text _x } joinString ", "];
+	_assignedLocationsText ctrlSetText (["Towns"] call Pie_fnc_ZeusTemplate_CreateTownLabel);
 
     // Assigned spawned enemies
 	_assignEnemyFactionButton = _display displayCtrl 30;
@@ -100,6 +100,8 @@ Pie_fnc_ZeusTemplate_OpenMissionPlanning = {
 			case "Occupy (No objectives)": { [owner player] remoteExec ["Pie_fnc_ZeusTemplate_StartOccupyTowns", 2] };
 			default { systemChat format ["Unknown mission type: %1", _missionTypeString] };
 		};
+
+		[missionNamespace getVariable ["Pie_ZeusMis_AmbientTowns", []]] call Pie_fnc_AmbientCombat;
 		
 		closeDialog 1;
 	}];
